@@ -1,0 +1,132 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@theme {
+  --color-accent: rgb(245, 118, 26);
+  --color-accent-hover: rgb(225, 108, 20);
+  --color-accent-light: rgb(255, 138, 46);
+  --color-blue-accent: rgb(59, 130, 246);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+:root {
+  --accent-rgb: 245, 118, 26;
+}
+
+* {
+  cursor: none;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  background-color: #0a0a0a;
+  color: #fafafa;
+}
+
+body.light-mode {
+  background-color: #fafafa;
+  color: #1a1a1a;
+}
+
+body.light-mode .particle {
+  background: #1a1a1a;
+}
+
+.custom-cursor {
+  pointer-events: none;
+  mix-blend-mode: difference;
+  z-index: 99999;
+}
+
+.particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Scroll Progress Line */
+.scroll-line-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.scroll-line {
+  height: 100%;
+  background: rgb(245, 118, 26);
+  transform-origin: left;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 118, 26, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(245, 118, 26);
+}
+
+/* Selection */
+::selection {
+  background: rgb(245, 118, 26);
+  color: white;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Button base styles */
+.btn-primary {
+  @apply px-6 py-3 bg-accent text-white font-medium rounded-lg transition-all duration-300 hover:bg-accent-hover hover:scale-105 active:scale-95;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 border border-gray-700 text-gray-300 font-medium rounded-lg transition-all duration-300 hover:border-accent hover:text-accent hover:scale-105 active:scale-95;
+}
+
+/* Card base styles */
+.card-base {
+  @apply p-6 rounded-2xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm transition-all duration-500 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10;
+}
+
+/* Light mode card */
+.light-mode .card-base {
+  @apply border-gray-200 bg-white/80 hover:border-accent/50 hover:shadow-accent/20;
+}
