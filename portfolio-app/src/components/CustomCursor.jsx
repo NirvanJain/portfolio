@@ -1,120 +1,98 @@
-import { useEffect, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion } from 'framer-motion'
 
 export default function CustomCursor() {
-  const [isHovering, setIsHovering] = useState(false)
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 })
+  const [pos, setPos] = useState({ x: -100, y: -100 })
+  const [hovering, setHovering] = useState(false)
+  const [clicking, setClicking] = useState(false)
+  const [visible, setVisible] = useState(false)
 
-  const cursorX = useMotionValue(0)
-  const cursorY = useMotionValue(0)
-
-  const followerX = useMotionValue(0)
-  const followerY = useMotionValue(0)
-
-  const springConfig = { damping: 25, stiffness: 700, mass: 0.5 }
-  const followerSpringConfig = { damping: 20, stiffness: 400, mass: 1 }
-
-  const cursorSpringX = useSpring(cursorX, springConfig)
-  const cursorSpringY = useSpring(cursorY, springConfig)
-  const followerSpringX = useSpring(followerX, followerSpringConfig)
-  const followerSpringY = useSpring(followerY, followerSpringConfig)
+  const handleMove = useCallback((e) => {
+    setPos({ x: e.clientX, y: e.clientY })
+    setVisible(true)
+  }, [])
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { clientX, clientY } = e
-
-      cursorX.set(clientX - 6)
-      cursorY.set(clientY - 6)
-      followerX.set(clientX - 20)
-      followerY.set(clientY - 20)
-
-      // Hide cursor when not moving
-      setIsVisible(true)
-
-      // Calculate velocity for additional effects
-      const velocity = Math.sqrt(
-        Math.pow(clientX - lastMousePos.x, 2) + Math.pow(clientY - lastMousePos.y, 2)
-      )
-
-      setLastMousePos({ x: clientX, y: clientY })
+    const onDown = () => setClicking(true)
+    const onUp = () => setClicking(false)
+    const onOver = (e) => {
+      if (e.target.closest('[data-hoverable], button, a, [role="button"], .hoverable')) {
+        setHovering(true)
+      }
     }
-
-    const handleMouseLeave = () => {
-      setIsVisible(false)
+    const onOut = (e) => {
+      if (e.target.closest('[data-hoverable], button, a, [role="button"], .hoverable')) {
+        setHovering(false)
+      }
     }
+    const onLeave = () => setVisible(false)
+    const onEnter = () => setVisible(true)
 
-    const handleMouseDown = () => setIsHovering(true)
-    const handleMouseUp = () => setIsHovering(false)
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseleave', handleMouseLeave)
-    document.addEventListener('mousedown', handleMouseDown)
-    document.addEventListener('mouseup', handleMouseUp)
-
-    // Add hover effect to interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, input, textarea, [data-hover]')
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', () => setIsHovering(true))
-      el.addEventListener('mouseleave', () => setIsHovering(false))
-    })
+    window.addEventListener('mousemove', handleMove, { passive: true })
+    window.addEventListener('mousedown', onDown)
+    window.addEventListener('mouseup', onUp)
+    document.addEventListener('mouseover', onOver)
+    document.addEventListener('mouseout', onOut)
+    document.addEventListener('mouseleave', onLeave)
+    document.addEventListener('mouseenter', onEnter)
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseleave', handleMouseLeave)
-      document.removeEventListener('mousedown', handleMouseDown)
-      document.removeEventListener('mouseup', handleMouseUp)
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mousedown', onDown)
+      window.removeEventListener('mouseup', onUp)
+      document.removeEventListener('mouseover', onOver)
+      document.removeEventListener('mouseout', onOut)
+      document.removeEventListener('mouseleave', onLeave)
+      document.removeEventListener('mouseenter', onEnter)
     }
-  }, [cursorX, cursorY, followerX, followerY, lastMousePos])
+  }, [handleMove])
+
+  if (!visible) return null
+
+  const ringSize = hovering ? 60 : clicking ? 16 : 28
 
   return (
     <>
-      {/* Main cursor dot */}
+      {/* Outer ring with spring follow */}
       <motion.div
-        className="custom-cursor fixed w-3 h-3 bg-accent rounded-full z-50"
+        className="fixed top-0 left-0 rounded-full pointer-events-none mix-blend-difference"
         style={{
-          x: cursorSpringX,
-          y: cursorSpringY,
-          scale: isHovering ? 2.5 : 1,
-          opacity: isVisible ? 1 : 0,
+          zIndex: 99999,
+          border: '1.5px solid #fff',
+          backgroundColor: 'transparent',
         }}
-        transition={{ duration: 0.1 }}
+        animate={{
+          x: pos.x - ringSize / 2,
+          y: pos.y - ringSize / 2,
+          width: ringSize,
+          height: ringSize,
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 350,
+          damping: 25,
+          mass: 0.5,
+        }}
       />
 
-      {/* Follower ring */}
+      {/* Center dot — hardcoded #fff so mix-blend-difference always works */}
       <motion.div
-        className="custom-cursor fixed w-10 h-10 border-2 border-accent/40 rounded-full z-40"
-        style={{
-          x: followerSpringX,
-          y: followerSpringY,
-          scale: isHovering ? 1.5 : 1,
-          opacity: isVisible ? 1 : 0,
+        className="fixed top-0 left-0 rounded-full pointer-events-none mix-blend-difference"
+        style={{ zIndex: 99999, backgroundColor: '#fff' }}
+        animate={{
+          x: pos.x - 2.5,
+          y: pos.y - 2.5,
+          width: 5,
+          height: 5,
+          opacity: hovering ? 0 : 1,
+          scale: clicking ? 0.5 : 1,
         }}
-        transition={{ duration: 0.15 }}
+        transition={{
+          type: 'spring',
+          stiffness: 600,
+          damping: 30,
+        }}
       />
-
-      {/* Trailing particles on hover */}
-      {isHovering && (
-        <>
-          <motion.div
-            className="custom-cursor fixed w-1 h-1 bg-accent/30 rounded-full"
-            style={{
-              x: followerSpringX,
-              y: followerSpringY,
-              opacity: isVisible ? 1 : 0,
-            }}
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.5, 0, 0],
-            }}
-            transition={{
-              duration: 0.5,
-              repeat: Infinity,
-              ease: 'easeOut',
-            }}
-          />
-        </>
-      )}
     </>
   )
 }
