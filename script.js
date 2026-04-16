@@ -240,6 +240,24 @@
         });
     });
 
+    // ===== SOCIAL RAIL DOCKING =====
+    const socialSidebar = document.getElementById('socialSidebar');
+    const contactSocials = document.querySelector('.contact-socials');
+    if (socialSidebar && contactSocials) {
+        const setSocialDocked = (docked) => {
+            document.body.classList.toggle('socials-docked', docked);
+            contactSocials.classList.toggle('is-docked', docked);
+        };
+
+        const socialDockObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                setSocialDocked(entry.isIntersecting && entry.intersectionRatio >= 0.35);
+            });
+        }, { threshold: [0.2, 0.35, 0.55], rootMargin: '0px 0px -12% 0px' });
+
+        socialDockObs.observe(contactSocials);
+    }
+
     // ===== MAGNETIC HOVER =====
     document.querySelectorAll('.project-link, .nav-links a, .contact-socials a, .social-sidebar a').forEach(el => {
         el.addEventListener('mousemove', (e) => {

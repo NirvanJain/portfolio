@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 
 // Components
 import CustomCursor from './components/CustomCursor'
@@ -9,6 +9,7 @@ import Character from './components/Character'
 import Terminal from './components/Terminal'
 import ThemeToggle from './components/ThemeToggle'
 import ScrollLine from './components/ScrollLine'
+import FloatingSocialRail from './components/FloatingSocialRail'
 
 // Sections
 import HeroSection from './sections/HeroSection'
@@ -144,6 +145,8 @@ export default function App() {
     setBooted(true)
   }, [])
 
+  const socialsDocked = activeSection === 'contact'
+
   return (
     <div className="relative w-full h-full bg-black text-white">
       {/* Custom cursor */}
@@ -158,7 +161,7 @@ export default function App() {
 
       {/* Main experience */}
       {booted && (
-        <>
+        <LayoutGroup id="social-dock">
           {/* 3D Background — fixed behind everything */}
           <Scene3D intensity={0.7} theme={theme} />
 
@@ -177,8 +180,11 @@ export default function App() {
             <AboutSection scrollContainer={mainRef} />
             <ProjectsSection scrollContainer={mainRef} />
             <SkillsSection scrollContainer={mainRef} />
-            <ContactSection scrollContainer={mainRef} />
+            <ContactSection scrollContainer={mainRef} socialsDocked={socialsDocked} />
           </main>
+
+          {/* Persistent left social rail */}
+          <FloatingSocialRail docked={socialsDocked} />
 
           {/* Floating side navigation */}
           <FloatingNav activeSection={activeSection} />
@@ -216,7 +222,7 @@ export default function App() {
               }, 300)
             }}
           />
-        </>
+        </LayoutGroup>
       )}
     </div>
   )
