@@ -1,13 +1,27 @@
+import { useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function ThemeToggle({ theme, onToggle }) {
   const isDark = theme === 'dark'
+  const btnRef = useRef(null)
+
+  const handleClick = () => {
+    const rect = btnRef.current?.getBoundingClientRect()
+    if (rect) {
+      const x = rect.left + rect.width / 2
+      const y = rect.top + rect.height / 2
+      onToggle({ x, y })
+    } else {
+      onToggle(null)
+    }
+  }
 
   return (
     <motion.button
+      ref={btnRef}
       className="fixed top-6 right-16 sm:top-8 sm:right-20 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-white/20 hover:border-white/50 rounded-full transition-colors duration-300 select-none"
-      style={{ zIndex: 70 }}
-      onClick={onToggle}
+      style={{ zIndex: 9999 }}
+      onClick={handleClick}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 1.5, duration: 0.4 }}

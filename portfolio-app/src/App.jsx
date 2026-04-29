@@ -94,15 +94,38 @@ export default function App() {
   })
   const mainRef = useRef(null)
 
+  // Circle reveal transition state
+  const [circleTransition, setCircleTransition] = useState(null) // { x, y, newTheme }
+
   // ===== APPLY THEME TO DOCUMENT =====
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('mindspace-theme', theme)
   }, [theme])
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
-  }, [])
+  const toggleTheme = useCallback((coords) => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    if (coords) {
+      // Calculate max radius needed to cover entire screen from click point
+      const maxX = Math.max(coords.x, window.innerWidth - coords.x)
+      const maxY = Math.max(coords.y, window.innerHeight - coords.y)
+      const maxRadius = Math.sqrt(maxX * maxX + maxY * maxY)
+
+      setCircleTransition({ x: coords.x, y: coords.y, newTheme, maxRadius })
+
+      // Apply theme halfway through the animation so it feels seamless
+      setTimeout(() => {
+        setTheme(newTheme)
+      }, 400)
+
+      // Remove overlay after animation completes
+      setTimeout(() => {
+        setCircleTransition(null)
+      }, 900)
+    } else {
+      setTheme(newTheme)
+    }
+  }, [theme])
 
   // ===== INTERSECTION OBSERVER FOR ACTIVE SECTION =====
   useEffect(() => {
@@ -147,6 +170,22 @@ export default function App() {
 
   return (
     <div className="relative w-full h-full bg-black text-white">
+      {/* Circle reveal transition overlay */}
+      {circleTransition && (
+        <div
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            zIndex: 9998,
+            backgroundColor: circleTransition.newTheme === 'light' ? '#ffffff' : '#000000',
+            clipPath: `circle(0px at ${circleTransition.x}px ${circleTransition.y}px)`,
+            animation: 'circleReveal 850ms cubic-bezier(0.4, 0, 0.2, 1) forwards',
+            '--reveal-x': `${circleTransition.x}px`,
+            '--reveal-y': `${circleTransition.y}px`,
+            '--reveal-radius': `${circleTransition.maxRadius}px`,
+          }}
+        />
+      )}
+
       {/* Custom cursor */}
       <CustomCursor />
 

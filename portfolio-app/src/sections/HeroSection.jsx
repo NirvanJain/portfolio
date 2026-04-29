@@ -7,7 +7,7 @@ const DEFAULT_NAME = 'VOIDRA'
 const HOVER_NAME   = 'NIRVAN JAIN'
 const TICK         = 30
 
-/* ─── HoverName ────────────────────────────────────────────────── */
+/*───HoverName──────────────────────────────────────────────────*/
 // Default: VOIDRA — hover reveals NIRVAN JAIN — leave reverts
 function HoverName({ className }) {
   const [display, setDisplay] = useState('')

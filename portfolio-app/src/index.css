@@ -171,6 +171,15 @@ html, body, #root {
   75% { transform: rotate(15deg); }
 }
 
+@keyframes circleReveal {
+  0% {
+    clip-path: circle(0px at var(--reveal-x) var(--reveal-y));
+  }
+  100% {
+    clip-path: circle(var(--reveal-radius) at var(--reveal-x) var(--reveal-y));
+  }
+}
+
 /* ===== red SPOTLIGHT — FOLLOWS MOUSE ===== */
 
 /* Wrapper for the name heading */
