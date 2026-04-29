@@ -90,140 +90,194 @@ function HoverName({ className }) {
   )
 }
 
+/* ─── SmokeEffect ───────────────────────────────────────────────── */
+function SmokeEffect({ isHovering, mousePos }) {
+  const canvasRef = useRef(null)
+  const particles = useRef([])
+  const animationRef = useRef(null)
+  const hoverStartTime = useRef(null)
+
+  useEffect(() => {
+    if (isHovering) {
+      hoverStartTime.current = Date.now()
+    } else {
+      hoverStartTime.current = null
+    }
+  }, [isHovering])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    
+    let w = canvas.offsetWidth
+    let h = canvas.offsetHeight
+    canvas.width = w
+    canvas.height = h
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth
+      canvas.height = canvas.offsetHeight
+    }
+    window.addEventListener('resize', resize)
+
+    const spawnParticle = (x, y) => {
+      particles.current.push({
+        x: x + (Math.random() - 0.5) * 10,
+        y: y + (Math.random() - 0.5) * 10,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -Math.random() * 0.8 - 0.4,
+        life: 1,
+        size: Math.random() * 10 + 10,
+      })
+    }
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      
+      if (isHovering && hoverStartTime.current && Date.now() - hoverStartTime.current > 1000) {
+        if (Math.random() < 0.4) {
+           spawnParticle(mousePos.current.x, mousePos.current.y)
+        }
+      }
+
+      for (let i = particles.current.length - 1; i >= 0; i--) {
+        const p = particles.current[i]
+        p.x += p.vx
+        p.y += p.vy
+        p.life -= 0.015
+        p.size += 0.2
+
+        if (p.life <= 0) {
+          particles.current.splice(i, 1)
+          continue
+        }
+
+        ctx.beginPath()
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        const alpha = Math.max(0, p.life * 0.3)
+        ctx.fillStyle = `rgba(200, 160, 255, ${alpha})`
+        ctx.fill()
+      }
+
+      animationRef.current = requestAnimationFrame(render)
+    }
+
+    render()
+
+    return () => {
+      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(animationRef.current)
+    }
+  }, [isHovering, mousePos])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none z-50 mix-blend-screen transition-opacity duration-500"
+      style={{ filter: 'blur(6px)', opacity: isHovering ? 1 : 0 }}
+    />
+  )
+}
+
 /* ─── PhotoFrame ────────────────────────────────────────────────── */
-// Black & White glitchy frame with hover spotlight effect
+// Clean, premium profile frame with interactive flip and smoke effect
 function PhotoFrame({ isInView, scrollYProgress }) {
   const [isHovered, setIsHovered] = useState(false)
-  const frameRef = useRef(null)
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.6])
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
+  const hoverRef = useRef(null)
+  const scaleScroll = useTransform(scrollYProgress, [0, 1], [1, 0.6])
+  const opacityScroll = useTransform(scrollYProgress, [0, 0.7], [1, 0])
+  const mousePos = useRef({ x: 0, y: 0 })
+
+  const handleMouseMove = (e) => {
+    if (!hoverRef.current) return
+    const rect = hoverRef.current.getBoundingClientRect()
+    mousePos.current = {
+      x: (e.clientX - rect.left) / rect.width * hoverRef.current.offsetWidth,
+      y: (e.clientY - rect.top) / rect.height * hoverRef.current.offsetHeight
+    }
+  }
 
   return (
     <motion.div
-      ref={frameRef}
-      className={`relative flex-shrink-0 ml-8 sm:ml-12 lg:ml-16 photo-frame${isHovered ? ' active' : ''}`}
-      initial={{ opacity: 0, scale: 0.8, x: 50 }}
-      animate={isInView ? { opacity: 1, scale: 1, x: 0 } : {}}
+      className="relative flex-shrink-0 ml-12 sm:ml-20 lg:ml-28 z-20"
+      initial={{ opacity: 0, scale: 0.8, y: 30 }}
+      animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
       transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       style={{
-        scale,
-        opacity: useTransform(opacity, (v) => v),
+        scale: scaleScroll,
+        opacity: useTransform(opacityScroll, (v) => v),
+        perspective: 1500
       }}
     >
-      {/* Glitchy border container - smaller size */}
-      <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56">
-        {/* Animated gradient border background - Black & White */}
-        <div className="absolute inset-0 rounded-sm overflow-hidden">
-          <div
-            className="absolute inset-0 w-full h-full"
-            style={{
-              background: 'linear-gradient(45deg, #ffffff, #666666, #1a1a1a, #ffffff)',
-              backgroundSize: '400% 400%',
-              animation: 'gradientShift 3s ease infinite',
-            }}
-          />
-        </div>
-
-        {/* Glitch overlay layers - Black & White */}
-        <div
-          className="absolute inset-0 opacity-40 mix-blend-screen"
-          style={{
-            background: `repeating-linear-gradient(
-              0deg,
-              rgba(255, 255, 255, 0.15) 0px,
-              rgba(255, 255, 255, 0.15) 1px,
-              transparent 1px,
-              transparent 3px
-            )`,
-            animation: 'glitchScan 4s linear infinite',
-          }}
-        />
-
-        {/* Secondary glitch layer - Black & White */}
-        <div
-          className="absolute inset-0 opacity-25 mix-blend-overlay"
-          style={{
-            background: `repeating-linear-gradient(
-              90deg,
-              rgba(255, 255, 255, 0.2) 0px,
-              rgba(255, 255, 255, 0.2) 2px,
-              transparent 2px,
-              transparent 4px
-            )`,
-            animation: 'glitchHorizontal 5s linear infinite reverse',
-          }}
-        />
-
-        {/* Corner accents */}
-        <div className="absolute -top-1 -left-1 w-5 h-5 border-t-2 border-l-2 border-white/80"
-             style={{ boxShadow: '0 0 10px rgba(255,255,255,0.5)' }} />
-        <div className="absolute -top-1 -right-1 w-5 h-5 border-t-2 border-r-2 border-white/80"
-             style={{ boxShadow: '0 0 10px rgba(255,255,255,0.5)' }} />
-        <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-2 border-l-2 border-white/80"
-             style={{ boxShadow: '0 0 10px rgba(255,255,255,0.5)' }} />
-        <div className="absolute -bottom-1 -right-1 w-5 h-5 border-b-2 border-r-2 border-white/80"
-             style={{ boxShadow: '0 0 10px rgba(255,255,255,0.5)' }} />
-
-        {/* Image placeholder */}
-        <div
-          className="absolute inset-[3px] bg-black/90 flex items-center justify-center overflow-hidden"
-          style={{
-            backdropFilter: 'blur(10px)',
-            clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-          }}
+      <motion.div
+        ref={hoverRef}
+        className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-2xl cursor-pointer"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onMouseMove={handleMouseMove}
+        animate={{ scale: isHovered ? 1.15 : 1 }}
+        transition={{ scale: { duration: 0.4, ease: "easeOut" } }}
+      >
+        <motion.div 
+          className="absolute inset-0 rounded-2xl p-[1px] group"
+          animate={{ rotateY: isHovered ? 1080 : 0 }}
+          transition={{ rotateY: { duration: 1.5, ease: "easeInOut" } }}
+          style={{ transformStyle: 'preserve-3d' }}
         >
-          {/* Replace src with your actual photograph path */}
-          <img
-            src={profilePic}
-            alt="Profile photograph"
-            className="w-full h-full object-cover grayscale contrast-125"
+          {/* Glowing gradient border */}
+          <div 
+            className="absolute inset-0 rounded-2xl opacity-40 group-hover:opacity-100 transition-opacity duration-700"
             style={{
-              filter: 'contrast(1.2) brightness(0.9) saturate(0)',
-            }}
-            onError={(e) => {
-              // Fallback when no image is present
-              e.target.style.display = 'none'
-              e.target.nextElementSibling.style.display = 'flex'
+              background: 'linear-gradient(135deg, rgba(200,180,255,0.5) 0%, rgba(255,255,255,0.05) 50%, rgba(200,180,255,0.5) 100%)',
             }}
           />
-          {/* Fallback placeholder */}
-          <div
-            className="hidden w-full h-full flex-col items-center justify-center text-center p-4"
-            style={{ display: 'none' }}
-          >
-            <div className="text-4xl mb-2 opacity-30">📷</div>
-            <p className="font-mono text-[10px] text-white/40 tracking-wider">
-              ADD YOUR PHOTO
-            </p>
+          
+          {/* Inner image container */}
+          <div className="absolute inset-[1px] bg-[#0a0a0a] rounded-2xl overflow-hidden">
+            <img
+              src={profilePic}
+              alt="Profile photograph"
+              className="w-full h-full object-cover"
+              style={{
+                // Prevent backface from looking fully inverted or weird
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
+            />
+            {/* The back of the image (seen during flip) */}
+            <div 
+              className="absolute inset-0 bg-[#0a0a0a]"
+              style={{ 
+                transform: 'rotateY(180deg)',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden'
+              }}
+            >
+              <img
+                src={profilePic}
+                alt="Profile photograph back"
+                className="w-full h-full object-cover opacity-50 grayscale"
+              />
+            </div>
+
+            {/* Subtle overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 pointer-events-none" />
           </div>
-        </div>
-
-        {/* Random glitch sparks */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 2%)`,
-            opacity: 0,
-            animation: 'glitchSparks 2s steps(10) infinite',
-          }}
-        />
-      </div>
-
-      {/* Decorative tech elements - Black & White */}
-      <div className="absolute -bottom-6 left-0 flex gap-1">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="w-1 bg-gradient-to-t from-white/60 to-transparent"
+          
+          {/* Outer premium glow */}
+          <div 
+            className="absolute inset-0 rounded-2xl blur-2xl -z-10 transition-opacity duration-700"
             style={{
-              height: `${Math.random() * 16 + 8}px`,
-              animation: `pulse ${0.5 + i * 0.2}s ease-in-out infinite alternate`,
+              background: 'radial-gradient(circle, rgba(160,140,220,0.4) 0%, transparent 70%)',
+              opacity: isHovered ? 0.8 : 0.2,
             }}
           />
-        ))}
-      </div>
+        </motion.div>
+
+        {/* Smoke Effect Overlay */}
+        <SmokeEffect isHovering={isHovered} mousePos={mousePos} />
+      </motion.div>
     </motion.div>
   )
 }
