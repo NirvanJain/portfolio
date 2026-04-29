@@ -62,12 +62,12 @@ function ContactCard({ link, index, scrollProgress, isDark }) {
           ? (isDark ? 'rgba(22, 18, 36, 0.96)' : 'rgba(248, 245, 255, 0.96)')
           : (isDark ? 'rgba(14, 14, 18, 0.92)' : 'rgba(255, 255, 255, 0.92)'),
         borderColor: hovered
-          ? (isDark ? 'rgba(130, 100, 210, 0.35)' : 'rgba(120, 90, 200, 0.35)')
+          ? (isDark ? 'rgba(130, 100, 210, 0.35)' : 'rgba(60, 40, 80, 0.35)')
           : (isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.08)'),
         boxShadow: hovered
           ? (isDark
               ? '0 0 0 1px rgba(130,100,210,0.15), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(130,100,210,0.1)'
-              : '0 0 0 1px rgba(120,90,200,0.15), 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(120,90,200,0.08)')
+              : '0 0 0 1px rgba(60,40,80,0.15), 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(60,40,80,0.08)')
           : (isDark
               ? '0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)'
               : '0 2px 12px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)'),
@@ -118,7 +118,9 @@ function ContactCard({ link, index, scrollProgress, isDark }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             style={{
-              background: 'radial-gradient(ellipse at 0% 50%, rgba(120,90,200,0.09) 0%, transparent 60%)',
+              background: isDark
+                ? 'radial-gradient(ellipse at 0% 50%, rgba(130,100,210,0.12) 0%, transparent 60%)'
+                : 'radial-gradient(ellipse at 0% 50%, rgba(60,40,80,0.09) 0%, transparent 60%)',
             }}
           />
         )}
@@ -150,13 +152,13 @@ function ContactCard({ link, index, scrollProgress, isDark }) {
               ? (isDark ? 'rgba(30, 22, 50, 0.9)' : 'rgba(245, 240, 255, 0.9)')
               : (isDark ? 'rgba(16, 16, 20, 0.85)' : 'rgba(250, 250, 255, 0.85)'),
             borderColor: hovered 
-              ? (isDark ? 'rgba(138, 110, 220, 0.3)' : 'rgba(120, 90, 200, 0.3)')
+              ? (isDark ? 'rgba(138, 110, 220, 0.3)' : 'rgba(60, 40, 80, 0.3)')
               : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'),
             color: hovered 
-              ? (isDark ? 'rgba(200, 190, 248, 0.95)' : 'rgba(90, 60, 180, 0.95)')
+              ? (isDark ? 'rgba(200, 190, 248, 0.95)' : 'rgba(60, 40, 80, 0.95)')
               : (isDark ? 'rgba(110, 105, 130, 0.65)' : 'rgba(80, 75, 100, 0.65)'),
             boxShadow: hovered 
-              ? (isDark ? '0 0 0 1px rgba(138, 110, 220,0.15), 0 0 14px rgba(138, 110, 220,0.12)' : '0 0 0 1px rgba(120, 90, 200,0.15), 0 0 14px rgba(120,90,200,0.08)')
+              ? (isDark ? '0 0 0 1px rgba(138, 110, 220,0.15), 0 0 14px rgba(138, 110, 220,0.12)' : '0 0 0 1px rgba(60, 40, 80,0.15), 0 0 14px rgba(60,40,80,0.08)')
               : 'none',
           }}
           transition={{ duration: 0.2 }}
@@ -187,7 +189,7 @@ function ContactCard({ link, index, scrollProgress, isDark }) {
         className="relative z-10 font-mono text-xs"
         animate={{
           color: hovered 
-            ? (isDark ? 'rgba(160, 130, 240, 0.85)' : 'rgba(100, 70, 200, 0.85)')
+            ? (isDark ? 'rgba(160, 130, 240, 0.85)' : 'rgba(60, 40, 80, 0.85)')
             : (isDark ? 'rgba(100, 95, 115, 0.3)' : 'rgba(80, 75, 100, 0.3)'),
           x: hovered ? 4 : 0,
         }}

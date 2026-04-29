@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
  */
 
 // 3D rotating shapes at section boundaries
-function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
+function FloatingShape({ top, type = 'diamond', delay = 0, progress, isDark }) {
   const rotation = useTransform(progress, [0, 1], [0, 720])
   const glow = useTransform(progress, (v) => {
     const dist = Math.abs(v - top / 100)
@@ -30,9 +30,9 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
           style={{
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200, 180, 255,0.4))',
+            background: isDark ? 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200, 180, 255,0.4))' : 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(60, 40, 80,0.4))',
             clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-            boxShadow: '0 0 8px rgba(200, 180, 255,0.3)',
+            boxShadow: isDark ? '0 0 8px rgba(200, 180, 255,0.3)' : '0 0 8px rgba(60, 40, 80,0.3)',
           }}
         />
       </motion.div>
@@ -55,9 +55,9 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
           style={{
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(180,200,255,0.3))',
+            background: isDark ? 'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(180,200,255,0.3))' : 'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(60, 80, 120,0.3))',
             borderRadius: 1,
-            boxShadow: '0 0 10px rgba(180,200,255,0.25), inset 0 0 3px rgba(255,255,255,0.3)',
+            boxShadow: isDark ? '0 0 10px rgba(180,200,255,0.25), inset 0 0 3px rgba(255,255,255,0.3)' : '0 0 10px rgba(60, 80, 120,0.25), inset 0 0 3px rgba(255,255,255,0.3)',
           }}
         />
       </motion.div>
@@ -76,8 +76,8 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
             width: 6,
             height: 6,
             borderRadius: '50%',
-            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200, 180, 255,0.3))',
-            boxShadow: '0 0 8px rgba(200, 180, 255,0.3), 0 0 20px rgba(200, 180, 255,0.1)',
+            background: isDark ? 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200, 180, 255,0.3))' : 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(60, 40, 80,0.3))',
+            boxShadow: isDark ? '0 0 8px rgba(200, 180, 255,0.3), 0 0 20px rgba(200, 180, 255,0.1)' : '0 0 8px rgba(60, 40, 80,0.3), 0 0 20px rgba(60, 40, 80,0.1)',
           }}
           animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 2, repeat: Infinity, delay }}
@@ -100,7 +100,7 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
           style={{
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(180,220,255,0.35))',
+            background: isDark ? 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(180,220,255,0.35))' : 'linear-gradient(135deg, rgba(255,255,255,0.85), rgba(60, 80, 100,0.35))',
             clipPath: 'polygon(50% 0%, 100% 100%, 0% 100%)',
           }}
         />
@@ -111,7 +111,8 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
   return shapes[type] || null
 }
 
-export default function ScrollLine({ scrollContainer }) {
+export default function ScrollLine({ scrollContainer, theme }) {
+  const isDark = theme === 'dark'
   const { scrollYProgress } = useScroll({ container: scrollContainer })
 
   const smooth = useSpring(scrollYProgress, {
@@ -146,8 +147,12 @@ export default function ScrollLine({ scrollContainer }) {
           width: 3,
           left: 1.5,
           height,
-          background: 'linear-gradient(90deg, rgba(180, 160, 255,0.15) 0%, rgba(220,210,255,0.7) 40%, rgba(255,255,255,0.9) 50%, rgba(220,210,255,0.7) 60%, rgba(180, 160, 255,0.15) 100%)',
-          boxShadow: '0 0 6px rgba(200, 180, 255,0.3), 0 0 14px rgba(200, 180, 255,0.15), 0 0 30px rgba(200, 180, 255,0.08)',
+          background: isDark 
+            ? 'linear-gradient(90deg, rgba(180, 160, 255,0.15) 0%, rgba(220,210,255,0.7) 40%, rgba(255,255,255,0.9) 50%, rgba(220,210,255,0.7) 60%, rgba(180, 160, 255,0.15) 100%)'
+            : 'linear-gradient(90deg, rgba(60, 40, 80,0.15) 0%, rgba(100, 80, 120,0.7) 40%, rgba(255,255,255,0.9) 50%, rgba(100, 80, 120,0.7) 60%, rgba(60, 40, 80,0.15) 100%)',
+          boxShadow: isDark
+            ? '0 0 6px rgba(200, 180, 255,0.3), 0 0 14px rgba(200, 180, 255,0.15), 0 0 30px rgba(200, 180, 255,0.08)'
+            : '0 0 6px rgba(60, 40, 80,0.3), 0 0 14px rgba(60, 40, 80,0.15), 0 0 30px rgba(60, 40, 80,0.08)',
         }}
       />
 
@@ -165,7 +170,9 @@ export default function ScrollLine({ scrollContainer }) {
         <motion.div
           className="absolute inset-0 rounded-full -translate-y-1/2"
           style={{
-            background: 'radial-gradient(circle, rgba(200, 180, 255,0.3) 0%, transparent 70%)',
+            background: isDark
+              ? 'radial-gradient(circle, rgba(200, 180, 255,0.3) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(60, 40, 80,0.3) 0%, transparent 70%)',
             width: 30,
             height: 30,
             left: -9,
@@ -183,8 +190,12 @@ export default function ScrollLine({ scrollContainer }) {
             height: 7,
             left: 2.5,
             top: '50%',
-            background: 'radial-gradient(circle at 35% 30%, #fff 0%, rgba(210, 190, 255,0.9) 40%, rgba(160, 140, 220,0.6) 100%)',
-            boxShadow: '0 0 4px rgba(200, 180, 255,0.8), 0 0 10px rgba(200, 180, 255,0.4), 0 0 25px rgba(200, 180, 255,0.2), 0 1px 2px rgba(0,0,0,0.3)',
+            background: isDark
+              ? 'radial-gradient(circle at 35% 30%, #fff 0%, rgba(210, 190, 255,0.9) 40%, rgba(160, 140, 220,0.6) 100%)'
+              : 'radial-gradient(circle at 35% 30%, #fff 0%, rgba(80, 60, 100,0.9) 40%, rgba(40, 28, 60,0.6) 100%)',
+            boxShadow: isDark
+              ? '0 0 4px rgba(200, 180, 255,0.8), 0 0 10px rgba(200, 180, 255,0.4), 0 0 25px rgba(200, 180, 255,0.2), 0 1px 2px rgba(0,0,0,0.3)'
+              : '0 0 4px rgba(60, 40, 80,0.8), 0 0 10px rgba(60, 40, 80,0.4), 0 0 25px rgba(60, 40, 80,0.2), 0 1px 2px rgba(0,0,0,0.3)',
           }}
           animate={{ scale: [1, 1.15, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -192,12 +203,12 @@ export default function ScrollLine({ scrollContainer }) {
       </motion.div>
 
       {/* 3D geometric shapes at section boundaries */}
-      <FloatingShape top={0} type="diamond" progress={smooth} />
-      <FloatingShape top={20} type="circle" delay={0.3} progress={smooth} />
-      <FloatingShape top={40} type="cube" progress={smooth} />
-      <FloatingShape top={60} type="triangle" delay={0.6} progress={smooth} />
-      <FloatingShape top={80} type="diamond" progress={smooth} />
-      <FloatingShape top={100} type="circle" delay={0.9} progress={smooth} />
+      <FloatingShape top={0} type="diamond" progress={smooth} isDark={isDark} />
+      <FloatingShape top={20} type="circle" delay={0.3} progress={smooth} isDark={isDark} />
+      <FloatingShape top={40} type="cube" progress={smooth} isDark={isDark} />
+      <FloatingShape top={60} type="triangle" delay={0.6} progress={smooth} isDark={isDark} />
+      <FloatingShape top={80} type="diamond" progress={smooth} isDark={isDark} />
+      <FloatingShape top={100} type="circle" delay={0.9} progress={smooth} isDark={isDark} />
     </div>
   )
 }

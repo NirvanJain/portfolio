@@ -227,10 +227,10 @@ html, body, #root {
 [data-theme="light"] .name-hover::before {
   background: radial-gradient(
     circle 180px at var(--mx, 50%) var(--my, 50%),
-    rgba(130, 90, 210, 0.25) 0%,
-    rgba(120, 80, 190, 0.15) 25%,
-    rgba(100, 80, 180, 0.08) 50%,
-    rgba(160, 140, 220, 0.03) 75%,
+    rgba(60, 40, 80, 0.25) 0%,
+    rgba(50, 35, 70, 0.15) 25%,
+    rgba(40, 28, 60, 0.08) 50%,
+    rgba(30, 20, 50, 0.03) 75%,
     transparent 100%
   );
 }
@@ -240,7 +240,7 @@ html, body, #root {
 }
 
 [data-theme="light"] .name-hover.active > * {
-  text-shadow: 0 0 16px rgba(120, 80, 190, 0.10), 0 0 40px rgba(100, 80, 180, 0.05);
+  text-shadow: 0 0 16px rgba(60, 40, 80, 0.15), 0 0 40px rgba(50, 35, 70, 0.08);
 }
 
 @keyframes typing-dots {

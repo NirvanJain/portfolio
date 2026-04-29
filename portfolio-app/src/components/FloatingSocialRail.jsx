@@ -76,7 +76,7 @@ function SocialPill({ link, index, scrollProgress, isDark }) {
               borderRadius: 20,
               background: isDark
                 ? 'radial-gradient(circle, rgba(138, 110, 220,0.32) 0%, rgba(100, 80, 180,0.12) 45%, transparent 70%)'
-                : 'radial-gradient(circle, rgba(120, 90, 200,0.2) 0%, rgba(80, 60, 160,0.08) 45%, transparent 70%)',
+                : 'radial-gradient(circle, rgba(60, 40, 80,0.25) 0%, rgba(40, 28, 60,0.12) 45%, transparent 70%)',
               filter: 'blur(10px)',
             }}
             initial={{ opacity: 0, scale: 0.6 }}
@@ -95,12 +95,12 @@ function SocialPill({ link, index, scrollProgress, isDark }) {
             ? (isDark ? 'rgba(28, 24, 42, 0.95)' : 'rgba(245, 242, 255, 0.95)')
             : (isDark ? 'rgba(18, 18, 22, 0.88)' : 'rgba(255, 255, 255, 0.9)'),
           borderColor: hovered
-            ? (isDark ? 'rgba(138, 110, 220, 0.45)' : 'rgba(120, 90, 200, 0.4)')
+            ? (isDark ? 'rgba(138, 110, 220, 0.45)' : 'rgba(60, 40, 80, 0.4)')
             : (isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.1)'),
           boxShadow: hovered
             ? (isDark 
                 ? 'inset 0 1px 0 rgba(138,110,220,0.15), 0 0 0 1px rgba(138,110,220,0.12), 0 4px 24px rgba(0,0,0,0.6)'
-                : 'inset 0 1px 0 rgba(120,90,200,0.1), 0 0 0 1px rgba(120,90,200,0.15), 0 4px 24px rgba(0,0,0,0.1)')
+                : 'inset 0 1px 0 rgba(60,40,80,0.15), 0 0 0 1px rgba(60,40,80,0.2), 0 4px 24px rgba(0,0,0,0.15)')
             : (isDark
                 ? 'inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 12px rgba(0,0,0,0.5)'
                 : 'inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.06)'),
@@ -120,7 +120,7 @@ function SocialPill({ link, index, scrollProgress, isDark }) {
               style={{
                 background: isDark
                   ? 'linear-gradient(115deg, transparent 20%, rgba(138,110,220,0.1) 50%, transparent 80%)'
-                  : 'linear-gradient(115deg, transparent 20%, rgba(120,90,200,0.08) 50%, transparent 80%)',
+                  : 'linear-gradient(115deg, transparent 20%, rgba(60,40,80,0.1) 50%, transparent 80%)',
                 borderRadius: 'inherit',
               }}
               initial={{ x: '-100%' }}
@@ -134,7 +134,7 @@ function SocialPill({ link, index, scrollProgress, isDark }) {
         {/* Icon */}
         <motion.span
           animate={{ color: hovered 
-            ? (isDark ? 'rgba(210, 200, 255, 0.95)' : 'rgba(90, 60, 180, 0.95)') 
+            ? (isDark ? 'rgba(210, 200, 255, 0.95)' : 'rgba(60, 40, 80, 0.95)') 
             : (isDark ? 'rgba(120, 115, 140, 0.65)' : 'rgba(80, 75, 100, 0.65)') }}
           transition={{ duration: 0.18 }}
           className="relative z-10"
@@ -154,9 +154,9 @@ function SocialPill({ link, index, scrollProgress, isDark }) {
               top: '50%',
               fontSize: 8,
               letterSpacing: '0.28em',
-              color: isDark ? 'rgba(190, 180, 230, 0.8)' : 'rgba(90, 60, 180, 0.8)',
+              color: isDark ? 'rgba(190, 180, 230, 0.8)' : 'rgba(60, 40, 80, 0.8)',
               background: isDark ? 'rgba(14, 12, 20, 0.9)' : 'rgba(255, 255, 255, 0.95)',
-              border: isDark ? '1px solid rgba(138, 110, 220, 0.2)' : '1px solid rgba(120, 90, 200, 0.2)',
+              border: isDark ? '1px solid rgba(138, 110, 220, 0.2)' : '1px solid rgba(60, 40, 80, 0.25)',
               backdropFilter: 'blur(12px)',
               padding: '4px 11px',
               borderRadius: 7,

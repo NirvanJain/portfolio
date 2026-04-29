@@ -335,7 +335,7 @@ function PhotoFrame({ isInView, scrollYProgress }) {
               style={{
                 background: isDark
                   ? 'linear-gradient(135deg, rgba(200, 180, 255,0.9) 0%, rgba(30,30,40,1) 30%, rgba(200, 180, 255,0.6) 70%, rgba(10,10,15,1) 100%)'
-                  : 'linear-gradient(135deg, rgba(80, 60, 120,0.9) 0%, rgba(220,220,230,1) 30%, rgba(80, 60, 120,0.6) 70%, rgba(240,240,245,1) 100%)',
+                  : 'linear-gradient(135deg, rgba(60, 40, 80,0.9) 0%, rgba(220,220,230,1) 30%, rgba(60, 40, 80,0.6) 70%, rgba(240,240,245,1) 100%)',
               }}
             />
             
@@ -364,7 +364,7 @@ function PhotoFrame({ isInView, scrollYProgress }) {
               >
                 <div className="absolute w-[150%] h-[150%] rounded-full bg-[radial-gradient(circle,rgba(200, 180, 255,0.15)_0%,transparent_60%)] animate-pulse" />
                 <div className={`z-10 text-5xl font-mono ${isDark ? 'text-white/90' : 'text-black/90'} tracking-[0.2em] font-light`}
-                  style={{ textShadow: isDark ? '0 0 20px rgba(200, 180, 255,0.8)' : '0 0 20px rgba(80, 60, 120,0.5)' }}
+                  style={{ textShadow: isDark ? '0 0 20px rgba(200, 180, 255,0.8)' : '0 0 20px rgba(60, 40, 80,0.5)' }}
                 >
                   NJ
                 </div>
@@ -380,7 +380,7 @@ function PhotoFrame({ isInView, scrollYProgress }) {
               style={{
                 background: isDark
                   ? 'radial-gradient(circle, rgba(180, 160, 255,0.4) 0%, transparent 70%)'
-                  : 'radial-gradient(circle, rgba(80, 60, 120,0.3) 0%, transparent 70%)',
+                  : 'radial-gradient(circle, rgba(60, 40, 80,0.3) 0%, transparent 70%)',
                 opacity: isHovered ? 1 : 0.3,
               }}
             />

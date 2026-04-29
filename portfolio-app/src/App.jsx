@@ -52,7 +52,9 @@ function FloatingNav({ activeSection, theme }) {
             <motion.div
               className="absolute inset-0 rounded-full"
               style={{
-                background: 'radial-gradient(circle, rgba(200, 180, 255,0.25) 0%, transparent 70%)',
+                background: isDark
+                  ? 'radial-gradient(circle, rgba(200, 180, 255,0.25) 0%, transparent 70%)'
+                  : 'radial-gradient(circle, rgba(60, 40, 80,0.25) 0%, transparent 70%)',
               }}
               animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.7, 0.4] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -66,8 +68,12 @@ function FloatingNav({ activeSection, theme }) {
                 ? {
                     width: 8,
                     height: 8,
-                    background: 'radial-gradient(circle at 35% 30%, #fff, rgba(210, 190, 255,0.9) 50%, rgba(160, 140, 220,0.6))',
-                    boxShadow: '0 0 4px rgba(200, 180, 255,0.8), 0 0 12px rgba(200, 180, 255,0.3)',
+                    background: isDark
+                      ? 'radial-gradient(circle at 35% 30%, #fff, rgba(210, 190, 255,0.9) 50%, rgba(160, 140, 220,0.6))'
+                      : 'radial-gradient(circle at 35% 30%, #fff, rgba(60, 40, 80,0.9) 50%, rgba(40, 28, 60,0.6))',
+                    boxShadow: isDark
+                      ? '0 0 4px rgba(200, 180, 255,0.8), 0 0 12px rgba(200, 180, 255,0.3)'
+                      : '0 0 4px rgba(60, 40, 80,0.8), 0 0 12px rgba(60, 40, 80,0.3)',
                   }
                 : {
                     width: 5,
@@ -227,7 +233,7 @@ export default function App() {
           <FloatingNav activeSection={activeSection} theme={theme} />
 
           {/* Lusion-style scroll progress line */}
-          <ScrollLine scrollContainer={mainRef} />
+          <ScrollLine scrollContainer={mainRef} theme={theme} />
 
           {/* Theme toggle */}
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
