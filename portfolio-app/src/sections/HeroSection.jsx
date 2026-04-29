@@ -123,40 +123,58 @@ function SmokeEffect({ isHovering, mousePos }) {
 
     const spawnParticle = (x, y) => {
       particles.current.push({
-        x: x + (Math.random() - 0.5) * 10,
-        y: y + (Math.random() - 0.5) * 10,
+        x: x + (Math.random() - 0.5) * 15,
+        y: y + (Math.random() - 0.5) * 15,
         vx: (Math.random() - 0.5) * 0.4,
-        vy: -Math.random() * 0.8 - 0.4,
-        life: 1,
-        size: Math.random() * 10 + 10,
+        vy: -Math.random() * 1.0 - 0.5,
+        age: 0,
+        maxAge: Math.random() * 60 + 60,
+        size: Math.random() * 15 + 15,
+        growth: Math.random() * 0.4 + 0.1,
+        phase: Math.random() * Math.PI * 2,
       })
     }
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       
-      if (isHovering && hoverStartTime.current && Date.now() - hoverStartTime.current > 1000) {
-        if (Math.random() < 0.4) {
+      if (isHovering && hoverStartTime.current && Date.now() - hoverStartTime.current > 500) {
+        if (Math.random() < 0.6) {
            spawnParticle(mousePos.current.x, mousePos.current.y)
         }
       }
 
       for (let i = particles.current.length - 1; i >= 0; i--) {
         const p = particles.current[i]
-        p.x += p.vx
-        p.y += p.vy
-        p.life -= 0.015
-        p.size += 0.2
-
-        if (p.life <= 0) {
+        
+        p.age++
+        if (p.age >= p.maxAge) {
           particles.current.splice(i, 1)
           continue
         }
 
+        // Swirling effect
+        p.x += p.vx + Math.sin(p.phase + p.age * 0.05) * 0.4
+        p.y += p.vy
+        p.size += p.growth
+
+        // Fade in, then fade out
+        let alpha = 0
+        if (p.age < 20) {
+          alpha = (p.age / 20) * 0.35
+        } else {
+          alpha = (1 - (p.age - 20) / (p.maxAge - 20)) * 0.35
+        }
+
+        // Realistic dark red/grey smoke
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size)
+        grad.addColorStop(0, `rgba(90, 20, 20, ${alpha})`)
+        grad.addColorStop(0.5, `rgba(40, 10, 10, ${alpha * 0.8})`)
+        grad.addColorStop(1, `rgba(10, 5, 5, 0)`)
+        
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        const alpha = Math.max(0, p.life * 0.3)
-        ctx.fillStyle = `rgba(200, 160, 255, ${alpha})`
+        ctx.fillStyle = grad
         ctx.fill()
       }
 
@@ -174,14 +192,14 @@ function SmokeEffect({ isHovering, mousePos }) {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-50 mix-blend-screen transition-opacity duration-500"
-      style={{ filter: 'blur(6px)', opacity: isHovering ? 1 : 0 }}
+      className="absolute inset-0 w-full h-full pointer-events-none z-50 transition-opacity duration-500"
+      style={{ filter: 'blur(5px)', opacity: isHovering ? 1 : 0 }}
     />
   )
 }
 
 /* ─── PhotoFrame ────────────────────────────────────────────────── */
-// Clean, premium profile frame with interactive flip and smoke effect
+// Deadpool-inspired gritty frame with realistic smoke
 function PhotoFrame({ isInView, scrollYProgress }) {
   const [isHovered, setIsHovered] = useState(false)
   const hoverRef = useRef(null)
@@ -220,57 +238,67 @@ function PhotoFrame({ isInView, scrollYProgress }) {
         transition={{ scale: { duration: 0.4, ease: "easeOut" } }}
       >
         <motion.div 
-          className="absolute inset-0 rounded-2xl p-[1px] group"
+          className="absolute inset-0 rounded-2xl p-[4px] group bg-[#111]"
           animate={{ rotateY: isHovered ? 1080 : 0 }}
           transition={{ rotateY: { duration: 1.5, ease: "easeInOut" } }}
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ transformStyle: 'preserve-3d', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.9)' }}
         >
-          {/* Glowing gradient border */}
+          {/* Deadpool Gritty Border */}
           <div 
-            className="absolute inset-0 rounded-2xl opacity-40 group-hover:opacity-100 transition-opacity duration-700"
+            className="absolute inset-0 rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
             style={{
-              background: 'linear-gradient(135deg, rgba(200,180,255,0.5) 0%, rgba(255,255,255,0.05) 50%, rgba(200,180,255,0.5) 100%)',
+              background: 'linear-gradient(135deg, #6b0000 0%, #1a0101 40%, #8a0505 60%, #0a0000 100%)',
+            }}
+          />
+          
+          {/* Tactical diagonal hashing */}
+          <div 
+            className="absolute inset-0 rounded-2xl opacity-30 pointer-events-none"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 8px, #000 8px, #000 16px)'
             }}
           />
           
           {/* Inner image container */}
-          <div className="absolute inset-[1px] bg-[#0a0a0a] rounded-2xl overflow-hidden">
+          <div className="absolute inset-[4px] bg-[#0a0a0a] rounded-[12px] overflow-hidden border border-black/80">
             <img
               src={profilePic}
               alt="Profile photograph"
               className="w-full h-full object-cover"
               style={{
-                // Prevent backface from looking fully inverted or weird
+                filter: 'contrast(1.15) saturate(0.85)',
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden'
               }}
             />
-            {/* The back of the image (seen during flip) */}
+            {/* The back of the image (Deadpool style inside out) */}
             <div 
-              className="absolute inset-0 bg-[#0a0a0a]"
+              className="absolute inset-0 bg-[#0a0a0a] flex items-center justify-center"
               style={{ 
                 transform: 'rotateY(180deg)',
                 backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden'
+                WebkitBackfaceVisibility: 'hidden',
+                background: 'radial-gradient(circle, #5a0404 0%, #050000 100%)'
               }}
             >
               <img
                 src={profilePic}
                 alt="Profile photograph back"
-                className="w-full h-full object-cover opacity-50 grayscale"
+                className="w-full h-full object-cover opacity-15 mix-blend-overlay grayscale"
               />
+              <div className="absolute inset-0 flex items-center justify-center opacity-40 text-7xl font-black text-white mix-blend-overlay">X</div>
             </div>
 
-            {/* Subtle overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 pointer-events-none" />
+            {/* Subtle red bottom overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-red-900/60 via-transparent to-transparent opacity-80 pointer-events-none" />
           </div>
           
-          {/* Outer premium glow */}
+          {/* Outer Crimson Glow */}
           <div 
-            className="absolute inset-0 rounded-2xl blur-2xl -z-10 transition-opacity duration-700"
+            className="absolute inset-0 rounded-2xl blur-xl -z-10 transition-opacity duration-700 pointer-events-none"
             style={{
-              background: 'radial-gradient(circle, rgba(160,140,220,0.4) 0%, transparent 70%)',
-              opacity: isHovered ? 0.8 : 0.2,
+              background: 'radial-gradient(circle, rgba(160,20,20,0.5) 0%, transparent 70%)',
+              opacity: isHovered ? 0.9 : 0.3,
             }}
           />
         </motion.div>
