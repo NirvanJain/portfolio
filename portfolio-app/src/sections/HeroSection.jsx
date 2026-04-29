@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import profilePic from '../config/pfp.jpg'
 
 const GLITCH_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#<>[]{}|~'
 const DEFAULT_NAME = 'VOIDRA'
@@ -175,7 +176,7 @@ function PhotoFrame({ isInView, scrollYProgress }) {
         >
           {/* Replace src with your actual photograph path */}
           <img
-            src="/placeholder-photo.jpg"
+            src={profilePic}
             alt="Profile photograph"
             className="w-full h-full object-cover grayscale contrast-125"
             style={{

@@ -5,7 +5,6 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import CustomCursor from './components/CustomCursor'
 import BootSequence from './components/BootSequence'
 import Scene3D from './components/Scene3D'
-import Character from './components/Character'
 import Terminal from './components/Terminal'
 import ThemeToggle from './components/ThemeToggle'
 import ScrollLine from './components/ScrollLine'
@@ -203,11 +202,6 @@ export default function App() {
           >
             [ T ] TERMINAL
           </motion.div>
-
-          {/* Character companion */}
-          <AnimatePresence>
-            {!terminalOpen && <Character key="char" visible />}
-          </AnimatePresence>
 
           {/* Terminal overlay */}
           <Terminal
