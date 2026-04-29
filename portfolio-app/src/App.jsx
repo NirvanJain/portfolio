@@ -25,7 +25,8 @@ const NAV_ITEMS = [
   { id: 'contact', label: '05' },
 ]
 
-function FloatingNav({ activeSection }) {
+function FloatingNav({ activeSection, theme }) {
+  const isDark = theme === 'dark'
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -71,7 +72,7 @@ function FloatingNav({ activeSection }) {
                 : {
                     width: 5,
                     height: 5,
-                    background: 'rgba(255,255,255,0.2)',
+                    background: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
                   }
             }
           />
@@ -184,7 +185,7 @@ export default function App() {
           <FloatingSocialRail scrollContainer={mainRef} />
 
           {/* Floating side navigation */}
-          <FloatingNav activeSection={activeSection} />
+          <FloatingNav activeSection={activeSection} theme={theme} />
 
           {/* Lusion-style scroll progress line */}
           <ScrollLine scrollContainer={mainRef} />

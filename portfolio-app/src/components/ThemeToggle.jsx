@@ -5,7 +5,7 @@ export default function ThemeToggle({ theme, onToggle }) {
 
   return (
     <motion.button
-      className="fixed top-6 right-16 sm:top-8 sm:right-20 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-white/15 hover:border-white/40 rounded-full transition-colors duration-300 select-none"
+      className="fixed top-6 right-16 sm:top-8 sm:right-20 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-white/20 hover:border-white/50 rounded-full transition-colors duration-300 select-none"
       style={{ zIndex: 70 }}
       onClick={onToggle}
       initial={{ opacity: 0, scale: 0.8 }}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
 import { SOCIAL_LINKS } from '../data/socialLinks'
 
@@ -35,7 +35,7 @@ const ICONS = {
 }
 
 /* ─── Single pill ──────────────────────────────────────────────── */
-function SocialPill({ link, index, scrollProgress }) {
+function SocialPill({ link, index, scrollProgress, isDark }) {
   const [hovered, setHovered] = useState(false)
 
   // Staggered scroll-exit — each pill peels away slightly later
@@ -74,7 +74,9 @@ function SocialPill({ link, index, scrollProgress }) {
             style={{
               inset: -16,
               borderRadius: 20,
-              background: 'radial-gradient(circle, rgba(138, 110, 220,0.32) 0%, rgba(100, 80, 180,0.12) 45%, transparent 70%)',
+              background: isDark
+                ? 'radial-gradient(circle, rgba(138, 110, 220,0.32) 0%, rgba(100, 80, 180,0.12) 45%, transparent 70%)'
+                : 'radial-gradient(circle, rgba(120, 90, 200,0.2) 0%, rgba(80, 60, 160,0.08) 45%, transparent 70%)',
               filter: 'blur(10px)',
             }}
             initial={{ opacity: 0, scale: 0.6 }}
@@ -90,18 +92,22 @@ function SocialPill({ link, index, scrollProgress }) {
         className="relative flex h-full w-full items-center justify-center rounded-[9px] overflow-hidden"
         animate={{
           background: hovered
-            ? 'rgba(28, 24, 42, 0.95)'
-            : 'rgba(18, 18, 22, 0.88)',
+            ? (isDark ? 'rgba(28, 24, 42, 0.95)' : 'rgba(245, 242, 255, 0.95)')
+            : (isDark ? 'rgba(18, 18, 22, 0.88)' : 'rgba(255, 255, 255, 0.9)'),
           borderColor: hovered
-            ? 'rgba(138, 110, 220, 0.45)'
-            : 'rgba(255, 255, 255, 0.07)',
+            ? (isDark ? 'rgba(138, 110, 220, 0.45)' : 'rgba(120, 90, 200, 0.4)')
+            : (isDark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.1)'),
           boxShadow: hovered
-            ? 'inset 0 1px 0 rgba(138, 110, 220,0.15), 0 0 0 1px rgba(138, 110, 220,0.12), 0 4px 24px rgba(0,0,0,0.6)'
-            : 'inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 12px rgba(0,0,0,0.5)',
+            ? (isDark 
+                ? 'inset 0 1px 0 rgba(138,110,220,0.15), 0 0 0 1px rgba(138,110,220,0.12), 0 4px 24px rgba(0,0,0,0.6)'
+                : 'inset 0 1px 0 rgba(120,90,200,0.1), 0 0 0 1px rgba(120,90,200,0.15), 0 4px 24px rgba(0,0,0,0.1)')
+            : (isDark
+                ? 'inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 12px rgba(0,0,0,0.5)'
+                : 'inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 12px rgba(0,0,0,0.06)'),
         }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
         style={{
-          border: '1px solid rgba(255,255,255,0.07)',
+          border: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,0.08)',
           backdropFilter: 'blur(16px)',
         }}
       >
@@ -112,7 +118,9 @@ function SocialPill({ link, index, scrollProgress }) {
               key="sheen"
               className="pointer-events-none absolute inset-0"
               style={{
-                background: 'linear-gradient(115deg, transparent 20%, rgba(138, 110, 220,0.1) 50%, transparent 80%)',
+                background: isDark
+                  ? 'linear-gradient(115deg, transparent 20%, rgba(138,110,220,0.1) 50%, transparent 80%)'
+                  : 'linear-gradient(115deg, transparent 20%, rgba(120,90,200,0.08) 50%, transparent 80%)',
                 borderRadius: 'inherit',
               }}
               initial={{ x: '-100%' }}
@@ -125,7 +133,9 @@ function SocialPill({ link, index, scrollProgress }) {
 
         {/* Icon */}
         <motion.span
-          animate={{ color: hovered ? 'rgba(210, 200, 255, 0.95)' : 'rgba(120, 115, 140, 0.65)' }}
+          animate={{ color: hovered 
+            ? (isDark ? 'rgba(210, 200, 255, 0.95)' : 'rgba(90, 60, 180, 0.95)') 
+            : (isDark ? 'rgba(120, 115, 140, 0.65)' : 'rgba(80, 75, 100, 0.65)') }}
           transition={{ duration: 0.18 }}
           className="relative z-10"
         >
@@ -144,9 +154,9 @@ function SocialPill({ link, index, scrollProgress }) {
               top: '50%',
               fontSize: 8,
               letterSpacing: '0.28em',
-              color: 'rgba(210, 190, 255, 0.8)',
-              background: 'rgba(14, 12, 20, 0.9)',
-              border: '1px solid rgba(138, 110, 220, 0.2)',
+              color: isDark ? 'rgba(190, 180, 230, 0.8)' : 'rgba(90, 60, 180, 0.8)',
+              background: isDark ? 'rgba(14, 12, 20, 0.9)' : 'rgba(255, 255, 255, 0.95)',
+              border: isDark ? '1px solid rgba(138, 110, 220, 0.2)' : '1px solid rgba(120, 90, 200, 0.2)',
               backdropFilter: 'blur(12px)',
               padding: '4px 11px',
               borderRadius: 7,
@@ -169,6 +179,17 @@ function SocialPill({ link, index, scrollProgress }) {
 /* ─── Rail ─────────────────────────────────────────────────────── */
 export default function FloatingSocialRail({ scrollContainer }) {
   const { scrollYProgress } = useScroll({ container: scrollContainer })
+  const [isDark, setIsDark] = useState(true)
+
+  useEffect(() => {
+    const check = () => {
+      setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+    }
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
 
   const rawRailOpacity = useTransform(scrollYProgress, [0.74, 0.91], [1, 0])
   const railOpacity    = useSpring(rawRailOpacity, { stiffness: 80, damping: 22 })
@@ -203,6 +224,7 @@ export default function FloatingSocialRail({ scrollContainer }) {
             link={link}
             index={i}
             scrollProgress={scrollYProgress}
+            isDark={isDark}
           />
         ))}
 

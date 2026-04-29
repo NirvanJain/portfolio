@@ -97,6 +97,7 @@ function SmokeEffect({ isHovering, mousePos }) {
   const animationRef = useRef(null)
   const hoverStartTime = useRef(null)
   const timeRef = useRef(0)
+  const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
     if (isHovering) {
@@ -105,6 +106,17 @@ function SmokeEffect({ isHovering, mousePos }) {
       hoverStartTime.current = null
     }
   }, [isHovering])
+
+  // Watch for theme changes
+  useEffect(() => {
+    const check = () => {
+      setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+    }
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -208,12 +220,23 @@ function SmokeEffect({ isHovering, mousePos }) {
         ctx.rotate(p.rotation)
         ctx.scale(1, p.stretch)
 
+        // Theme-adaptive smoke colors
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size)
-        grad.addColorStop(0,   `rgba(230, 220, 255, ${alpha})`)
-        grad.addColorStop(0.2, `rgba(200, 180, 240, ${alpha * 0.85})`)
-        grad.addColorStop(0.5, `rgba(170, 150, 220, ${alpha * 0.4})`)
-        grad.addColorStop(0.8, `rgba(140, 120, 200, ${alpha * 0.1})`)
-        grad.addColorStop(1,   `rgba(120, 100, 180, 0)`)
+        if (isDark) {
+          // Dark theme: soft lavender wisps
+          grad.addColorStop(0,   `rgba(230, 220, 255, ${alpha})`)
+          grad.addColorStop(0.2, `rgba(200, 180, 240, ${alpha * 0.85})`)
+          grad.addColorStop(0.5, `rgba(170, 150, 220, ${alpha * 0.4})`)
+          grad.addColorStop(0.8, `rgba(140, 120, 200, ${alpha * 0.1})`)
+          grad.addColorStop(1,   `rgba(120, 100, 180, 0)`)
+        } else {
+          // Light theme: dark moody purple-grey smoke
+          grad.addColorStop(0,   `rgba(60, 40, 80, ${alpha * 1.8})`)
+          grad.addColorStop(0.2, `rgba(50, 35, 70, ${alpha * 1.4})`)
+          grad.addColorStop(0.5, `rgba(40, 28, 60, ${alpha * 0.7})`)
+          grad.addColorStop(0.8, `rgba(30, 20, 50, ${alpha * 0.2})`)
+          grad.addColorStop(1,   `rgba(20, 15, 40, 0)`)
+        }
         
         ctx.beginPath()
         ctx.arc(0, 0, p.size, 0, Math.PI * 2)
@@ -231,12 +254,12 @@ function SmokeEffect({ isHovering, mousePos }) {
       window.removeEventListener('resize', resize)
       cancelAnimationFrame(animationRef.current)
     }
-  }, [isHovering, mousePos])
+  }, [isHovering, mousePos, isDark])
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[100] transition-opacity duration-700 mix-blend-screen"
+      className={`fixed inset-0 pointer-events-none z-[100] transition-opacity duration-700 ${isDark ? 'mix-blend-screen' : 'mix-blend-multiply'}`}
       style={{ opacity: isHovering ? 1 : 0, filter: 'blur(6px)' }}
     />
   )
@@ -246,10 +269,21 @@ function SmokeEffect({ isHovering, mousePos }) {
 // Sleek, high-end circular frame with tumbling flip and massive smoke
 function PhotoFrame({ isInView, scrollYProgress }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [isDark, setIsDark] = useState(true)
   const hoverRef = useRef(null)
   const scaleScroll = useTransform(scrollYProgress, [0, 1], [1, 0.6])
   const opacityScroll = useTransform(scrollYProgress, [0, 0.7], [1, 0])
   const mousePos = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const check = () => {
+      setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+    }
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
 
   const handleMouseMove = (e) => {
     mousePos.current = {
@@ -299,12 +333,14 @@ function PhotoFrame({ isInView, scrollYProgress }) {
             <div 
               className="absolute inset-0 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
               style={{
-                background: 'linear-gradient(135deg, rgba(200, 180, 255,0.9) 0%, rgba(30,30,40,1) 30%, rgba(200, 180, 255,0.6) 70%, rgba(10,10,15,1) 100%)',
+                background: isDark
+                  ? 'linear-gradient(135deg, rgba(200, 180, 255,0.9) 0%, rgba(30,30,40,1) 30%, rgba(200, 180, 255,0.6) 70%, rgba(10,10,15,1) 100%)'
+                  : 'linear-gradient(135deg, rgba(80, 60, 120,0.9) 0%, rgba(220,220,230,1) 30%, rgba(80, 60, 120,0.6) 70%, rgba(240,240,245,1) 100%)',
               }}
             />
             
             {/* Inner image container */}
-            <div className="absolute inset-[2px] bg-[#050505] rounded-[14px] overflow-hidden">
+            <div className={`absolute inset-[2px] ${isDark ? 'bg-[#050505]' : 'bg-[#f0f0f2]'} rounded-[14px] overflow-hidden`}>
               <img
                 src={profilePic}
                 alt="Profile photograph"
@@ -327,9 +363,8 @@ function PhotoFrame({ isInView, scrollYProgress }) {
                 }}
               >
                 <div className="absolute w-[150%] h-[150%] rounded-full bg-[radial-gradient(circle,rgba(200, 180, 255,0.15)_0%,transparent_60%)] animate-pulse" />
-                <div 
-                  className="z-10 text-5xl font-mono text-white/90 tracking-[0.2em] font-light"
-                  style={{ textShadow: '0 0 20px rgba(200, 180, 255,0.8)' }}
+                <div className={`z-10 text-5xl font-mono ${isDark ? 'text-white/90' : 'text-black/90'} tracking-[0.2em] font-light`}
+                  style={{ textShadow: isDark ? '0 0 20px rgba(200, 180, 255,0.8)' : '0 0 20px rgba(80, 60, 120,0.5)' }}
                 >
                   NJ
                 </div>
@@ -343,7 +378,9 @@ function PhotoFrame({ isInView, scrollYProgress }) {
             <div 
               className="absolute inset-[-20px] rounded-2xl blur-2xl -z-10 transition-opacity duration-700 pointer-events-none"
               style={{
-                background: 'radial-gradient(circle, rgba(180, 160, 255,0.4) 0%, transparent 70%)',
+                background: isDark
+                  ? 'radial-gradient(circle, rgba(180, 160, 255,0.4) 0%, transparent 70%)'
+                  : 'radial-gradient(circle, rgba(80, 60, 120,0.3) 0%, transparent 70%)',
                 opacity: isHovered ? 1 : 0.3,
               }}
             />
