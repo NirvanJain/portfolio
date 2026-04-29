@@ -8,7 +8,7 @@ import Scene3D from './components/Scene3D'
 import Terminal from './components/Terminal'
 import ThemeToggle from './components/ThemeToggle'
 import ScrollLine from './components/ScrollLine'
-import FloatingSocialRail from './components/FloatingSocialRail'
+
 
 // Sections
 import HeroSection from './sections/HeroSection'
@@ -226,8 +226,7 @@ export default function App() {
             <ContactSection scrollContainer={mainRef} />
           </main>
 
-          {/* Persistent left social rail */}
-          <FloatingSocialRail scrollContainer={mainRef} />
+
 
           {/* Floating side navigation */}
           <FloatingNav activeSection={activeSection} theme={theme} />
