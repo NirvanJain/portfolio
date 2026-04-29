@@ -19,7 +19,7 @@ import SkillsSection from './sections/SkillsSection'
 import ContactSection from './sections/ContactSection'
 
 const NAV_ITEMS = [
-  { id: 'hero', label: '01' },
+  { id: 'hero', label: '01' }, 
   { id: 'about', label: '02' },
   { id: 'projects', label: '03' },
   { id: 'skills', label: '04' },
@@ -145,8 +145,6 @@ export default function App() {
     setBooted(true)
   }, [])
 
-  const socialsDocked = activeSection === 'contact'
-
   return (
     <div className="relative w-full h-full bg-black text-white">
       {/* Custom cursor */}
@@ -180,11 +178,11 @@ export default function App() {
             <AboutSection scrollContainer={mainRef} />
             <ProjectsSection scrollContainer={mainRef} />
             <SkillsSection scrollContainer={mainRef} />
-            <ContactSection scrollContainer={mainRef} socialsDocked={socialsDocked} />
+            <ContactSection scrollContainer={mainRef} />
           </main>
 
           {/* Persistent left social rail */}
-          <FloatingSocialRail docked={socialsDocked} />
+          <FloatingSocialRail scrollContainer={mainRef} />
 
           {/* Floating side navigation */}
           <FloatingNav activeSection={activeSection} />

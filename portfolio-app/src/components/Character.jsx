@@ -4,17 +4,23 @@ import { motion, AnimatePresence } from 'framer-motion'
 export default function Character({ visible = true }) {
   const [isHovered, setIsHovered] = useState(false)
   const [isIdle, setIsIdle] = useState(true)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [tilt, setTilt] = useState(0)
   const containerRef = useRef(null)
   const idleTimer = useRef(null)
 
   // Track mouse for eye direction + idle detection
   useEffect(() => {
     const handleMouse = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY })
       setIsIdle(false)
       clearTimeout(idleTimer.current)
       idleTimer.current = setTimeout(() => setIsIdle(true), 4000)
+
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        const cx = rect.left + rect.width / 2
+        const dx = (e.clientX - cx) / window.innerWidth
+        setTilt(dx * -6)
+      }
     }
     window.addEventListener('mousemove', handleMouse, { passive: true })
     return () => {
@@ -23,14 +29,7 @@ export default function Character({ visible = true }) {
     }
   }, [])
 
-  // Calculate tilt toward cursor
-  const getTilt = () => {
-    if (!containerRef.current) return 0
-    const rect = containerRef.current.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const dx = (mousePos.x - cx) / window.innerWidth
-    return dx * -6
-  }
+
 
   if (!visible) return null
 
@@ -68,7 +67,7 @@ export default function Character({ visible = true }) {
         className="relative w-28 h-32 sm:w-32 sm:h-36"
         animate={{
           y: [0, -5, 0],
-          rotate: isHovered ? [0, -2, 2, 0] : getTilt(),
+          rotate: isHovered ? [0, -2, 2, 0] : tilt,
         }}
         transition={{
           y: { duration: 4, repeat: Infinity, ease: 'easeInOut' },

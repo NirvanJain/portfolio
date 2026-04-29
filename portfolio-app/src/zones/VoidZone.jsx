@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import GlitchText from '../components/GlitchText'
 import MagneticButton from '../components/MagneticButton'
@@ -99,7 +99,7 @@ export default function VoidZone({ onBack, onNavigate }) {
             { label: 'YEARS', value: '3+' },
             { label: 'PROJECTS', value: '15+' },
             { label: 'COFFEES', value: '∞' },
-          ].map((stat, i) => (
+          ].map((stat) => (
             <motion.div
               key={stat.label}
               className="text-center group"

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, Suspense } from 'react'
+import { useRef, useMemo, Suspense } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -48,13 +48,52 @@ const ROCKET_N = 30
 const STAR_N = 50
 const SMOKE_N = 200
 
-// Reusable vectors (avoid allocations in the loop)
 const _ndc = new THREE.Vector3()
 const _rayDir = new THREE.Vector3()
 const _ray = new THREE.Ray()
 const _objPos = new THREE.Vector3()
 const _closest = new THREE.Vector3()
-const _repelDir = new THREE.Vector3()
+
+const genRockets = () => Array.from({ length: ROCKET_N }, () => {
+  const x = (Math.random() - 0.5) * 16
+  const y = (Math.random() - 0.5) * 10
+  const z = -1 - Math.random() * 5
+  const baseRot = Math.random() * Math.PI * 2
+  return {
+    px: x, py: y, pz: z,
+    bx: x, by: y,
+    vx: 0, vy: 0,
+    rot: baseRot,
+    baseRot,
+    scale: 0.6 + Math.random() * 0.8,
+    bobPh: Math.random() * Math.PI * 2,
+    bobSpd: 0.2 + Math.random() * 0.3,
+    smokeCD: 0,
+  }
+})
+
+const genStars = () => Array.from({ length: STAR_N }, () => {
+  const x = (Math.random() - 0.5) * 20
+  const y = (Math.random() - 0.5) * 12
+  const z = -1 - Math.random() * 7
+  const baseRot = Math.random() * Math.PI * 2
+  return {
+    px: x, py: y, pz: z,
+    bx: x, by: y,
+    vx: 0, vy: 0,
+    rot: baseRot,
+    baseRot,
+    scale: 0.35 + Math.random() * 0.55,
+    twPh: Math.random() * Math.PI * 2,
+    twSpd: 1 + Math.random() * 2,
+    spinSpd: (Math.random() - 0.5) * 0.3,
+  }
+})
+
+const genSmokes = () => Array.from({ length: SMOKE_N }, () => ({
+  x: 0, y: 0, z: -100, vx: 0, vy: 0,
+  life: 0, maxLife: 1, scale: 0,
+}))
 
 function InteractiveField({ theme = 'dark' }) {
   const rocketMesh = useRef()
@@ -70,56 +109,18 @@ function InteractiveField({ theme = 'dark' }) {
   const smokeGeo = useMemo(() => new THREE.CircleGeometry(0.04, 6), [])
 
   // ── Data ──
-  const rockets = useMemo(() =>
-    Array.from({ length: ROCKET_N }, () => {
-      const x = (Math.random() - 0.5) * 16
-      const y = (Math.random() - 0.5) * 10
-      const z = -1 - Math.random() * 5
-      const baseRot = Math.random() * Math.PI * 2
-      return {
-        px: x, py: y, pz: z,
-        bx: x, by: y,
-        vx: 0, vy: 0,
-        rot: baseRot,
-        baseRot,
-        scale: 0.6 + Math.random() * 0.8,
-        bobPh: Math.random() * Math.PI * 2,
-        bobSpd: 0.2 + Math.random() * 0.3,
-        smokeCD: 0,
-      }
-    }), []
-  )
+  const rockets = useRef(null)
+  if (rockets.current == null) rockets.current = genRockets()
 
-  const stars = useMemo(() =>
-    Array.from({ length: STAR_N }, () => {
-      const x = (Math.random() - 0.5) * 20
-      const y = (Math.random() - 0.5) * 12
-      const z = -1 - Math.random() * 7
-      const baseRot = Math.random() * Math.PI * 2
-      return {
-        px: x, py: y, pz: z,
-        bx: x, by: y,
-        vx: 0, vy: 0,
-        rot: baseRot,
-        baseRot,
-        scale: 0.35 + Math.random() * 0.55,
-        twPh: Math.random() * Math.PI * 2,
-        twSpd: 1 + Math.random() * 2,
-        spinSpd: (Math.random() - 0.5) * 0.3,
-      }
-    }), []
-  )
+  const stars = useRef(null)
+  if (stars.current == null) stars.current = genStars()
 
-  const smokes = useMemo(() =>
-    Array.from({ length: SMOKE_N }, () => ({
-      x: 0, y: 0, z: -100, vx: 0, vy: 0,
-      life: 0, maxLife: 1, scale: 0,
-    })), []
-  )
+  const smokes = useRef(null)
+  if (smokes.current == null) smokes.current = genSmokes()
 
   const smokeIdx = useRef(0)
   function emitSmoke(x, y, z, vx, vy) {
-    const p = smokes[smokeIdx.current % SMOKE_N]
+    const p = smokes.current[smokeIdx.current % SMOKE_N]
     smokeIdx.current++
     p.x = x; p.y = y; p.z = z
     p.vx = -vx * 0.1 + (Math.random() - 0.5) * 0.012
@@ -161,10 +162,15 @@ function InteractiveField({ theme = 'dark' }) {
     const SPRING = 0.014
     const DAMP = 0.87
 
+    const rs = rockets.current
+    const ss = stars.current
+    const sks = smokes.current
+    if (!rs || !ss || !sks) return
+
     // ── ROCKETS ──
     if (rocketMesh.current) {
       for (let i = 0; i < ROCKET_N; i++) {
-        const r = rockets[i]
+        const r = rs[i]
         const { dx, dy, dist } = computeRepel(r.px, r.py, r.pz, camera, pointer)
 
         if (dist < REPEL_R && dist > 0.001) {
@@ -222,7 +228,7 @@ function InteractiveField({ theme = 'dark' }) {
     // ── STARS ──
     if (starMesh.current) {
       for (let i = 0; i < STAR_N; i++) {
-        const s = stars[i]
+        const s = ss[i]
         const { dx, dy, dist } = computeRepel(s.px, s.py, s.pz, camera, pointer)
 
         if (dist < REPEL_R && dist > 0.001) {
@@ -259,7 +265,7 @@ function InteractiveField({ theme = 'dark' }) {
     // ── SMOKE ──
     if (smokeMesh.current) {
       for (let i = 0; i < SMOKE_N; i++) {
-        const p = smokes[i]
+        const p = sks[i]
         if (p.life > 0) {
           p.life -= delta / p.maxLife
           p.x += p.vx
@@ -320,7 +326,7 @@ export default function Scene3D({ intensity = 1, theme = 'dark' }) {
         resize={{ scroll: false }}
       >
         <Suspense fallback={null}>
-          <ambientLight intensity={0.05} />
+          <ambientLight intensity={0.05 * intensity} />
           <InteractiveField theme={theme} />
           <CameraRig />
         </Suspense>

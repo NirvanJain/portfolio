@@ -3,14 +3,9 @@ import { motion } from 'framer-motion'
 
 export default function ParticleBackground() {
   const containerRef = useRef(null)
-  const [particles, setParticles] = useState([])
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const [isDarkMode, setIsDarkMode] = useState(true)
-
-  useEffect(() => {
-    // Generate particles
-    const particleCount = 80
-    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+  const [particles] = useState(() => {
+    const particleCount = 80;
+    return Array.from({ length: particleCount }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -18,8 +13,11 @@ export default function ParticleBackground() {
       duration: Math.random() * 20 + 10,
       delay: Math.random() * 5,
     }))
-    setParticles(newParticles)
+  })
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [isDarkMode, setIsDarkMode] = useState(true)
 
+  useEffect(() => {
     // Track mouse for repel effect
     const handleMouseMove = (e) => {
       setMousePos({

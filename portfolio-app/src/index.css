@@ -409,6 +409,21 @@ html, body, #root {
   text-shadow: 0 0 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1);
 }
 
+/* ===== PHOTO FRAME ===== */
+
+.photo-frame {
+  position: relative;
+  display: inline-block;
+}
+
+.photo-frame > div > .absolute:first-child {
+  transition: filter 0.4s ease;
+}
+
+.photo-frame.active > div > .absolute:first-child {
+  filter: brightness(1.15);
+}
+
 /* Vignette effect */
 .vignette {
   position: fixed;
@@ -429,4 +444,35 @@ html, body, #root {
 
 .distort-hover:hover {
   transform: skewX(-2deg) scale(1.02);
+}
+
+/* ===== PHOTO FRAME GLITCH ANIMATIONS ===== */
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes glitchScan {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(3px); }
+}
+
+@keyframes glitchHorizontal {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(2px); }
+}
+
+@keyframes glitchSparks {
+  0%, 89% { opacity: 0; }
+  90%, 92% { opacity: 0.7; }
+  93%, 95% { opacity: 0; }
+  96%, 98% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.3; transform: scaleY(0.8); }
+  100% { opacity: 1; transform: scaleY(1.2); }
 }
