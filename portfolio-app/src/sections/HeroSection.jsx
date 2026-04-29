@@ -269,11 +269,38 @@ function SmokeEffect({ isHovering, mousePos }) {
 // Sleek, high-end circular frame with tumbling flip and massive smoke
 function PhotoFrame({ isInView, scrollYProgress }) {
   const [isHovered, setIsHovered] = useState(false)
+  const mouseIn = useRef(false)
   const [isDark, setIsDark] = useState(true)
   const hoverRef = useRef(null)
   const scaleScroll = useTransform(scrollYProgress, [0, 1], [1, 0.6])
   const opacityScroll = useTransform(scrollYProgress, [0, 0.7], [1, 0])
   const mousePos = useRef({ x: 0, y: 0 })
+
+  useEffect(() => {
+    // Initial intro flip after entry animation
+    let revertTimer
+    const introTimer = setTimeout(() => {
+      if (hoverRef.current) {
+        const rect = hoverRef.current.getBoundingClientRect()
+        mousePos.current = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        }
+      }
+      setIsHovered(true)
+      
+      revertTimer = setTimeout(() => {
+        if (!mouseIn.current) {
+          setIsHovered(false)
+        }
+      }, 2000)
+    }, 2200)
+    
+    return () => {
+      clearTimeout(introTimer)
+      clearTimeout(revertTimer)
+    }
+  }, [])
 
   useEffect(() => {
     const check = () => {
@@ -311,8 +338,8 @@ function PhotoFrame({ isInView, scrollYProgress }) {
         <motion.div
           ref={hoverRef}
           className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-2xl cursor-pointer"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onMouseEnter={() => { mouseIn.current = true; setIsHovered(true) }}
+          onMouseLeave={() => { mouseIn.current = false; setIsHovered(false) }}
           onMouseMove={handleMouseMove}
           animate={{ scale: isHovered ? 1.15 : 1 }}
           transition={{ scale: { duration: 0.5, ease: "easeOut" } }}
@@ -320,7 +347,7 @@ function PhotoFrame({ isInView, scrollYProgress }) {
           <motion.div 
             className="absolute inset-0 rounded-2xl p-[2px] group"
             animate={{ 
-              rotateY: isHovered ? 1080 : 0,
+              rotateY: isHovered ? 720 : 0,
               rotateZ: isHovered ? [0, -5, 5, -2, 0] : 0
             }}
             transition={{ 
