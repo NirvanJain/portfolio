@@ -30,9 +30,9 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
           style={{
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,180,255,0.4))',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200, 180, 255,0.4))',
             clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
-            boxShadow: '0 0 8px rgba(200,180,255,0.3)',
+            boxShadow: '0 0 8px rgba(200, 180, 255,0.3)',
           }}
         />
       </motion.div>
@@ -76,8 +76,8 @@ function FloatingShape({ top, type = 'diamond', delay = 0, progress }) {
             width: 6,
             height: 6,
             borderRadius: '50%',
-            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200,180,255,0.3))',
-            boxShadow: '0 0 8px rgba(200,180,255,0.3), 0 0 20px rgba(200,180,255,0.1)',
+            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200, 180, 255,0.3))',
+            boxShadow: '0 0 8px rgba(200, 180, 255,0.3), 0 0 20px rgba(200, 180, 255,0.1)',
           }}
           animate={{ scale: [1, 1.3, 1] }}
           transition={{ duration: 2, repeat: Infinity, delay }}
@@ -146,8 +146,8 @@ export default function ScrollLine({ scrollContainer }) {
           width: 3,
           left: 1.5,
           height,
-          background: 'linear-gradient(90deg, rgba(180,160,255,0.15) 0%, rgba(220,210,255,0.7) 40%, rgba(255,255,255,0.9) 50%, rgba(220,210,255,0.7) 60%, rgba(180,160,255,0.15) 100%)',
-          boxShadow: '0 0 6px rgba(200,180,255,0.3), 0 0 14px rgba(200,180,255,0.15), 0 0 30px rgba(200,180,255,0.08)',
+          background: 'linear-gradient(90deg, rgba(180, 160, 255,0.15) 0%, rgba(220,210,255,0.7) 40%, rgba(255,255,255,0.9) 50%, rgba(220,210,255,0.7) 60%, rgba(180, 160, 255,0.15) 100%)',
+          boxShadow: '0 0 6px rgba(200, 180, 255,0.3), 0 0 14px rgba(200, 180, 255,0.15), 0 0 30px rgba(200, 180, 255,0.08)',
         }}
       />
 
@@ -165,7 +165,7 @@ export default function ScrollLine({ scrollContainer }) {
         <motion.div
           className="absolute inset-0 rounded-full -translate-y-1/2"
           style={{
-            background: 'radial-gradient(circle, rgba(200,180,255,0.3) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(200, 180, 255,0.3) 0%, transparent 70%)',
             width: 30,
             height: 30,
             left: -9,
@@ -183,8 +183,8 @@ export default function ScrollLine({ scrollContainer }) {
             height: 7,
             left: 2.5,
             top: '50%',
-            background: 'radial-gradient(circle at 35% 30%, #fff 0%, rgba(210,190,255,0.9) 40%, rgba(160,140,220,0.6) 100%)',
-            boxShadow: '0 0 4px rgba(200,180,255,0.8), 0 0 10px rgba(200,180,255,0.4), 0 0 25px rgba(200,180,255,0.2), 0 1px 2px rgba(0,0,0,0.3)',
+            background: 'radial-gradient(circle at 35% 30%, #fff 0%, rgba(210, 190, 255,0.9) 40%, rgba(160, 140, 220,0.6) 100%)',
+            boxShadow: '0 0 4px rgba(200, 180, 255,0.8), 0 0 10px rgba(200, 180, 255,0.4), 0 0 25px rgba(200, 180, 255,0.2), 0 1px 2px rgba(0,0,0,0.3)',
           }}
           animate={{ scale: [1, 1.15, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}

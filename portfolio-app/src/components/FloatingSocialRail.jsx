@@ -65,7 +65,7 @@ function SocialPill({ link, index, scrollProgress }) {
       transition={{ type: 'spring', stiffness: 340, damping: 26 }}
       data-hoverable
     >
-      {/* Deep lavender aura — blooms on hover, invisible at rest */}
+      {/* Deep red aura — blooms on hover, invisible at rest */}
       <AnimatePresence>
         {hovered && (
           <motion.span
@@ -74,7 +74,7 @@ function SocialPill({ link, index, scrollProgress }) {
             style={{
               inset: -16,
               borderRadius: 20,
-              background: 'radial-gradient(circle, rgba(138,110,220,0.32) 0%, rgba(100,80,180,0.12) 45%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(138, 110, 220,0.32) 0%, rgba(100, 80, 180,0.12) 45%, transparent 70%)',
               filter: 'blur(10px)',
             }}
             initial={{ opacity: 0, scale: 0.6 }}
@@ -96,7 +96,7 @@ function SocialPill({ link, index, scrollProgress }) {
             ? 'rgba(138, 110, 220, 0.45)'
             : 'rgba(255, 255, 255, 0.07)',
           boxShadow: hovered
-            ? 'inset 0 1px 0 rgba(138,110,220,0.15), 0 0 0 1px rgba(138,110,220,0.12), 0 4px 24px rgba(0,0,0,0.6)'
+            ? 'inset 0 1px 0 rgba(138, 110, 220,0.15), 0 0 0 1px rgba(138, 110, 220,0.12), 0 4px 24px rgba(0,0,0,0.6)'
             : 'inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 12px rgba(0,0,0,0.5)',
         }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -105,14 +105,14 @@ function SocialPill({ link, index, scrollProgress }) {
           backdropFilter: 'blur(16px)',
         }}
       >
-        {/* Lavender sheen sweep on hover */}
+        {/* red sheen sweep on hover */}
         <AnimatePresence>
           {hovered && (
             <motion.span
               key="sheen"
               className="pointer-events-none absolute inset-0"
               style={{
-                background: 'linear-gradient(115deg, transparent 20%, rgba(138,110,220,0.1) 50%, transparent 80%)',
+                background: 'linear-gradient(115deg, transparent 20%, rgba(138, 110, 220,0.1) 50%, transparent 80%)',
                 borderRadius: 'inherit',
               }}
               initial={{ x: '-100%' }}
@@ -144,7 +144,7 @@ function SocialPill({ link, index, scrollProgress }) {
               top: '50%',
               fontSize: 8,
               letterSpacing: '0.28em',
-              color: 'rgba(190, 180, 230, 0.8)',
+              color: 'rgba(210, 190, 255, 0.8)',
               background: 'rgba(14, 12, 20, 0.9)',
               border: '1px solid rgba(138, 110, 220, 0.2)',
               backdropFilter: 'blur(12px)',

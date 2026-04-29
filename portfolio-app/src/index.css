@@ -171,7 +171,7 @@ html, body, #root {
   75% { transform: rotate(15deg); }
 }
 
-/* ===== LAVENDER SPOTLIGHT — FOLLOWS MOUSE ===== */
+/* ===== red SPOTLIGHT — FOLLOWS MOUSE ===== */
 
 /* Wrapper for the name heading */
 .name-hover {
@@ -189,7 +189,7 @@ html, body, #root {
     circle 180px at var(--mx, 50%) var(--my, 50%),
     rgba(175, 150, 240, 0.40) 0%,
     rgba(160, 130, 220, 0.25) 25%,
-    rgba(140, 110, 210, 0.12) 50%,
+    rgba(160, 140, 220, 0.12) 50%,
     rgba(200, 180, 255, 0.04) 75%,
     transparent 100%
   );
@@ -220,8 +220,8 @@ html, body, #root {
     circle 180px at var(--mx, 50%) var(--my, 50%),
     rgba(130, 90, 210, 0.25) 0%,
     rgba(120, 80, 190, 0.15) 25%,
-    rgba(100, 60, 170, 0.08) 50%,
-    rgba(140, 100, 220, 0.03) 75%,
+    rgba(100, 80, 180, 0.08) 50%,
+    rgba(160, 140, 220, 0.03) 75%,
     transparent 100%
   );
 }
@@ -231,7 +231,7 @@ html, body, #root {
 }
 
 [data-theme="light"] .name-hover.active > * {
-  text-shadow: 0 0 16px rgba(120, 80, 190, 0.10), 0 0 40px rgba(100, 60, 170, 0.05);
+  text-shadow: 0 0 16px rgba(120, 80, 190, 0.10), 0 0 40px rgba(100, 80, 180, 0.05);
 }
 
 @keyframes typing-dots {

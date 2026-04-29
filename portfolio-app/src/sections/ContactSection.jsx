@@ -80,7 +80,7 @@ function ContactCard({ link, index, scrollProgress }) {
       }}
       data-hoverable
     >
-      {/* Purple-lavender left accent bar — slides in on hover */}
+      {/* Purple-red left accent bar — slides in on hover */}
       <AnimatePresence>
         {hovered && (
           <motion.span
@@ -95,15 +95,15 @@ function ContactCard({ link, index, scrollProgress }) {
             <span
               className="block w-full h-full"
               style={{
-                background: 'linear-gradient(to bottom, rgba(100,70,200,0.1), rgba(138,110,220,0.9), rgba(100,70,200,0.1))',
-                boxShadow: '0 0 12px rgba(138,110,220,0.6), 0 0 24px rgba(138,110,220,0.2)',
+                background: 'linear-gradient(to bottom, rgba(100,70,200,0.1), rgba(138, 110, 220,0.9), rgba(100,70,200,0.1))',
+                boxShadow: '0 0 12px rgba(138, 110, 220,0.6), 0 0 24px rgba(138, 110, 220,0.2)',
               }}
             />
           </motion.span>
         )}
       </AnimatePresence>
 
-      {/* Lavender underpaint wash */}
+      {/* red underpaint wash */}
       <AnimatePresence>
         {hovered && (
           <motion.span
@@ -131,7 +131,7 @@ function ContactCard({ link, index, scrollProgress }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.55, ease: 'easeInOut' }}
             style={{
-              background: 'linear-gradient(105deg, transparent 30%, rgba(138,110,220,0.07) 50%, transparent 70%)',
+              background: 'linear-gradient(105deg, transparent 30%, rgba(138, 110, 220,0.07) 50%, transparent 70%)',
             }}
           />
         )}
@@ -145,7 +145,7 @@ function ContactCard({ link, index, scrollProgress }) {
             background: hovered ? 'rgba(30, 22, 50, 0.9)' : 'rgba(16, 16, 20, 0.85)',
             borderColor: hovered ? 'rgba(138, 110, 220, 0.3)' : 'rgba(255,255,255,0.06)',
             color: hovered ? 'rgba(200, 190, 248, 0.95)' : 'rgba(110, 105, 130, 0.65)',
-            boxShadow: hovered ? '0 0 0 1px rgba(138,110,220,0.15), 0 0 14px rgba(138,110,220,0.12)' : 'none',
+            boxShadow: hovered ? '0 0 0 1px rgba(138, 110, 220,0.15), 0 0 14px rgba(138, 110, 220,0.12)' : 'none',
           }}
           transition={{ duration: 0.2 }}
           style={{ border: '1px solid rgba(255,255,255,0.06)' }}

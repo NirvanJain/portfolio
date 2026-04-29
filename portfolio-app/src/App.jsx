@@ -51,7 +51,7 @@ function FloatingNav({ activeSection }) {
             <motion.div
               className="absolute inset-0 rounded-full"
               style={{
-                background: 'radial-gradient(circle, rgba(200,180,255,0.25) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(200, 180, 255,0.25) 0%, transparent 70%)',
               }}
               animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.7, 0.4] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
@@ -65,8 +65,8 @@ function FloatingNav({ activeSection }) {
                 ? {
                     width: 8,
                     height: 8,
-                    background: 'radial-gradient(circle at 35% 30%, #fff, rgba(210,190,255,0.9) 50%, rgba(160,140,220,0.6))',
-                    boxShadow: '0 0 4px rgba(200,180,255,0.8), 0 0 12px rgba(200,180,255,0.3)',
+                    background: 'radial-gradient(circle at 35% 30%, #fff, rgba(210, 190, 255,0.9) 50%, rgba(160, 140, 220,0.6))',
+                    boxShadow: '0 0 4px rgba(200, 180, 255,0.8), 0 0 12px rgba(200, 180, 255,0.3)',
                   }
                 : {
                     width: 5,

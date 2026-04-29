@@ -96,6 +96,7 @@ function SmokeEffect({ isHovering, mousePos }) {
   const particles = useRef([])
   const animationRef = useRef(null)
   const hoverStartTime = useRef(null)
+  const timeRef = useRef(0)
 
   useEffect(() => {
     if (isHovering) {
@@ -110,37 +111,52 @@ function SmokeEffect({ isHovering, mousePos }) {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     
-    let w = canvas.offsetWidth
-    let h = canvas.offsetHeight
-    canvas.width = w
-    canvas.height = h
-
     const resize = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
     }
+    resize()
     window.addEventListener('resize', resize)
 
+    // Simple pseudo-noise for organic turbulence
+    const noise = (x, y) => {
+      const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453
+      return n - Math.floor(n)
+    }
+
     const spawnParticle = (x, y) => {
+      const angle = Math.random() * Math.PI * 2
+      const speed = Math.random() * 0.8 + 0.3
       particles.current.push({
-        x: x + (Math.random() - 0.5) * 15,
-        y: y + (Math.random() - 0.5) * 15,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: -Math.random() * 1.0 - 0.5,
+        x: x + (Math.random() - 0.5) * 12,
+        y: y + (Math.random() - 0.5) * 12,
+        vx: Math.cos(angle) * speed * 0.5,
+        vy: -Math.random() * 1.5 - 1.2,
         age: 0,
-        maxAge: Math.random() * 60 + 60,
-        size: Math.random() * 15 + 15,
-        growth: Math.random() * 0.4 + 0.1,
+        maxAge: Math.random() * 80 + 140,
+        size: Math.random() * 25 + 20,
+        growth: Math.random() * 0.6 + 0.25,
         phase: Math.random() * Math.PI * 2,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.03,
+        stretch: Math.random() * 0.4 + 0.7, // ellipse ratio
+        density: Math.random() * 0.5 + 0.5,  // per-particle opacity multiplier
+        turbX: Math.random() * 100,
+        turbY: Math.random() * 100,
       })
     }
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      timeRef.current += 0.016
       
-      if (isHovering && hoverStartTime.current && Date.now() - hoverStartTime.current > 500) {
-        if (Math.random() < 0.6) {
-           spawnParticle(mousePos.current.x, mousePos.current.y)
+      if (isHovering && hoverStartTime.current && Date.now() - hoverStartTime.current > 800) {
+        // Spawn in small bursts for wispy clumps
+        if (Math.random() < 0.25) {
+          const count = Math.random() < 0.3 ? 2 : 1
+          for (let j = 0; j < count; j++) {
+            spawnParticle(mousePos.current.x, mousePos.current.y)
+          }
         }
       }
 
@@ -153,29 +169,57 @@ function SmokeEffect({ isHovering, mousePos }) {
           continue
         }
 
-        // Swirling effect
-        p.x += p.vx + Math.sin(p.phase + p.age * 0.05) * 0.4
-        p.y += p.vy
-        p.size += p.growth
+        // Organic turbulence — layered sine waves at different frequencies
+        const t = timeRef.current
+        const turbulence = 
+          Math.sin(p.phase + p.age * 0.02) * 0.6 +
+          Math.sin(p.phase * 2.3 + p.age * 0.035) * 0.3 +
+          noise(p.turbX + t * 0.5, p.turbY + t * 0.3) * 0.8 - 0.4
 
-        // Fade in, then fade out
-        let alpha = 0
-        if (p.age < 20) {
-          alpha = (p.age / 20) * 0.35
-        } else {
-          alpha = (1 - (p.age - 20) / (p.maxAge - 20)) * 0.35
+        p.x += p.vx + turbulence
+        p.y += p.vy
+        p.vy *= 0.998 // gradual deceleration
+        p.vx *= 0.995
+        p.size += p.growth
+        p.rotation += p.rotSpeed
+
+        // Gather and pool near the top
+        if (p.y < 100) {
+          p.vy *= 0.92
+          p.vx += (Math.random() - 0.5) * 0.3
+          p.growth *= 1.01 // spread out more at the top
         }
 
-        // Realistic dark red/grey smoke
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size)
-        grad.addColorStop(0, `rgba(90, 20, 20, ${alpha})`)
-        grad.addColorStop(0.5, `rgba(40, 10, 10, ${alpha * 0.8})`)
-        grad.addColorStop(1, `rgba(10, 5, 5, 0)`)
+        // Lifecycle alpha: quick fade-in, gentle hold, long fade-out
+        let alpha = 0
+        const life = p.age / p.maxAge
+        if (life < 0.1) {
+          alpha = (life / 0.1) * 0.07
+        } else if (life > 0.6) {
+          alpha = ((1 - life) / 0.4) * 0.07
+        } else {
+          alpha = 0.07
+        }
+        alpha *= p.density
+
+        // Draw as rotated ellipse for wispy shapes
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.rotate(p.rotation)
+        ctx.scale(1, p.stretch)
+
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size)
+        grad.addColorStop(0,   `rgba(230, 220, 255, ${alpha})`)
+        grad.addColorStop(0.2, `rgba(200, 180, 240, ${alpha * 0.85})`)
+        grad.addColorStop(0.5, `rgba(170, 150, 220, ${alpha * 0.4})`)
+        grad.addColorStop(0.8, `rgba(140, 120, 200, ${alpha * 0.1})`)
+        grad.addColorStop(1,   `rgba(120, 100, 180, 0)`)
         
         ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2)
         ctx.fillStyle = grad
         ctx.fill()
+        ctx.restore()
       }
 
       animationRef.current = requestAnimationFrame(render)
@@ -192,14 +236,14 @@ function SmokeEffect({ isHovering, mousePos }) {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-50 transition-opacity duration-500"
-      style={{ filter: 'blur(5px)', opacity: isHovering ? 1 : 0 }}
+      className="fixed inset-0 pointer-events-none z-[100] transition-opacity duration-700 mix-blend-screen"
+      style={{ opacity: isHovering ? 1 : 0, filter: 'blur(6px)' }}
     />
   )
 }
 
 /* ─── PhotoFrame ────────────────────────────────────────────────── */
-// Deadpool-inspired gritty frame with realistic smoke
+// Sleek, high-end circular frame with tumbling flip and massive smoke
 function PhotoFrame({ isInView, scrollYProgress }) {
   const [isHovered, setIsHovered] = useState(false)
   const hoverRef = useRef(null)
@@ -208,105 +252,105 @@ function PhotoFrame({ isInView, scrollYProgress }) {
   const mousePos = useRef({ x: 0, y: 0 })
 
   const handleMouseMove = (e) => {
-    if (!hoverRef.current) return
-    const rect = hoverRef.current.getBoundingClientRect()
     mousePos.current = {
-      x: (e.clientX - rect.left) / rect.width * hoverRef.current.offsetWidth,
-      y: (e.clientY - rect.top) / rect.height * hoverRef.current.offsetHeight
+      x: e.clientX,
+      y: e.clientY
     }
   }
 
   return (
-    <motion.div
-      className="relative flex-shrink-0 ml-12 sm:ml-20 lg:ml-28 z-20"
-      initial={{ opacity: 0, scale: 0.8, y: 30 }}
-      animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
-      transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        scale: scaleScroll,
-        opacity: useTransform(opacityScroll, (v) => v),
-        perspective: 1500
-      }}
-    >
+    <>
+      {/* Smoke Effect overlays the whole screen */}
+      <SmokeEffect isHovering={isHovered} mousePos={mousePos} />
+
       <motion.div
-        ref={hoverRef}
-        className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-2xl cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onMouseMove={handleMouseMove}
-        animate={{ scale: isHovered ? 1.15 : 1 }}
-        transition={{ scale: { duration: 0.4, ease: "easeOut" } }}
+        className="relative flex-shrink-0 ml-12 sm:ml-20 lg:ml-28 z-20"
+        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+        animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
+        transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          scale: scaleScroll,
+          opacity: useTransform(opacityScroll, (v) => v),
+          perspective: 2000
+        }}
       >
-        <motion.div 
-          className="absolute inset-0 rounded-2xl p-[4px] group bg-[#111]"
-          animate={{ rotateY: isHovered ? 1080 : 0 }}
-          transition={{ rotateY: { duration: 1.5, ease: "easeInOut" } }}
-          style={{ transformStyle: 'preserve-3d', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.9)' }}
+        <motion.div
+          ref={hoverRef}
+          className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-2xl cursor-pointer"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onMouseMove={handleMouseMove}
+          animate={{ scale: isHovered ? 1.15 : 1 }}
+          transition={{ scale: { duration: 0.5, ease: "easeOut" } }}
         >
-          {/* Deadpool Gritty Border */}
-          <div 
-            className="absolute inset-0 rounded-2xl opacity-80 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
-            style={{
-              background: 'linear-gradient(135deg, #6b0000 0%, #1a0101 40%, #8a0505 60%, #0a0000 100%)',
+          <motion.div 
+            className="absolute inset-0 rounded-2xl p-[2px] group"
+            animate={{ 
+              rotateY: isHovered ? 1080 : 0,
+              rotateZ: isHovered ? [0, -5, 5, -2, 0] : 0
             }}
-          />
-          
-          {/* Tactical diagonal hashing */}
-          <div 
-            className="absolute inset-0 rounded-2xl opacity-30 pointer-events-none"
-            style={{
-              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 8px, #000 8px, #000 16px)'
+            transition={{ 
+              rotateY: { duration: 2, ease: [0.16, 1, 0.3, 1] },
+              rotateZ: { duration: 2, ease: "easeInOut" }
             }}
-          />
-          
-          {/* Inner image container */}
-          <div className="absolute inset-[4px] bg-[#0a0a0a] rounded-[12px] overflow-hidden border border-black/80">
-            <img
-              src={profilePic}
-              alt="Profile photograph"
-              className="w-full h-full object-cover"
+            style={{ transformStyle: 'preserve-3d', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
+          >
+            {/* Glowing gradient rim background */}
+            <div 
+              className="absolute inset-0 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
               style={{
-                filter: 'contrast(1.15) saturate(0.85)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden'
+                background: 'linear-gradient(135deg, rgba(200, 180, 255,0.9) 0%, rgba(30,30,40,1) 30%, rgba(200, 180, 255,0.6) 70%, rgba(10,10,15,1) 100%)',
               }}
             />
-            {/* The back of the image (Deadpool style inside out) */}
-            <div 
-              className="absolute inset-0 bg-[#0a0a0a] flex items-center justify-center"
-              style={{ 
-                transform: 'rotateY(180deg)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-                background: 'radial-gradient(circle, #5a0404 0%, #050000 100%)'
-              }}
-            >
+            
+            {/* Inner image container */}
+            <div className="absolute inset-[2px] bg-[#050505] rounded-[14px] overflow-hidden">
               <img
                 src={profilePic}
-                alt="Profile photograph back"
-                className="w-full h-full object-cover opacity-15 mix-blend-overlay grayscale"
+                alt="Profile photograph"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                style={{
+                  filter: 'contrast(1.05)',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden'
+                }}
               />
-              <div className="absolute inset-0 flex items-center justify-center opacity-40 text-7xl font-black text-white mix-blend-overlay">X</div>
+              
+              {/* The back of the image (Frosted red Glass) */}
+              <div 
+                className="absolute inset-0 flex items-center justify-center overflow-hidden"
+                style={{ 
+                  transform: 'rotateY(180deg)',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                  background: 'linear-gradient(135deg, rgba(20,20,20,1) 0%, rgba(0,0,0,1) 100%)'
+                }}
+              >
+                <div className="absolute w-[150%] h-[150%] rounded-full bg-[radial-gradient(circle,rgba(200, 180, 255,0.15)_0%,transparent_60%)] animate-pulse" />
+                <div 
+                  className="z-10 text-5xl font-mono text-white/90 tracking-[0.2em] font-light"
+                  style={{ textShadow: '0 0 20px rgba(200, 180, 255,0.8)' }}
+                >
+                  NJ
+                </div>
+              </div>
+
+              {/* Subtle overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
             </div>
-
-            {/* Subtle red bottom overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-red-900/60 via-transparent to-transparent opacity-80 pointer-events-none" />
-          </div>
-          
-          {/* Outer Crimson Glow */}
-          <div 
-            className="absolute inset-0 rounded-2xl blur-xl -z-10 transition-opacity duration-700 pointer-events-none"
-            style={{
-              background: 'radial-gradient(circle, rgba(160,20,20,0.5) 0%, transparent 70%)',
-              opacity: isHovered ? 0.9 : 0.3,
-            }}
-          />
+            
+            {/* Outer premium glow */}
+            <div 
+              className="absolute inset-[-20px] rounded-2xl blur-2xl -z-10 transition-opacity duration-700 pointer-events-none"
+              style={{
+                background: 'radial-gradient(circle, rgba(180, 160, 255,0.4) 0%, transparent 70%)',
+                opacity: isHovered ? 1 : 0.3,
+              }}
+            />
+          </motion.div>
         </motion.div>
-
-        {/* Smoke Effect Overlay */}
-        <SmokeEffect isHovering={isHovered} mousePos={mousePos} />
       </motion.div>
-    </motion.div>
+    </>
   )
 }
 
