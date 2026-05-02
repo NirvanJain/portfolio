@@ -1,8 +1,160 @@
 import { useRef, useState, useEffect } from 'react'
 import { motion, useInView, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion'
-import GlitchText from '../components/GlitchText'
 import ScrollSection from '../components/ScrollSection'
 import { SOCIAL_LINKS } from '../data/socialLinks'
+
+/* ─── Particle Background ──────────────────────────────────────── */
+function ParticleBackground({ isDark }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Track mouse
+    let mouse = { x: -1000, y: -1000, radius: 200 }; // Larger interact radius
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    };
+    const handleMouseLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
+
+    // Adjust particle count for the smaller area
+    const particleCount = Math.min(Math.floor(window.innerWidth / 4), 200);
+    const particles = [];
+    
+    // Increased opacity for visibility
+    const colors = isDark 
+      ? ['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0.4)', 'rgba(138, 110, 220, 0.8)', 'rgba(138, 110, 220, 0.5)']
+      : ['rgba(0, 0, 0, 0.7)', 'rgba(0, 0, 0, 0.4)', 'rgba(100, 70, 200, 0.8)', 'rgba(100, 70, 200, 0.5)'];
+
+    for (let i = 0; i < particleCount; i++) {
+      // Natural distribution in the bottom 15% (below the X button)
+      const yTargetRatio = Math.pow(Math.random(), 1.8); 
+      const baseY = canvas.height - (yTargetRatio * canvas.height * 0.15) - 10;
+      const baseX = Math.random() * window.innerWidth;
+      
+      particles.push({
+        x: baseX,
+        y: baseY + Math.random() * 50,
+        baseX: baseX,
+        baseY: baseY,
+        size: Math.random() * 2.5 + 1.5, // Larger shapes so they are visible
+        shape: ['circle', 'triangle', 'cross', 'dot'][Math.floor(Math.random() * 4)],
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.01,
+        flowOffset: Math.random() * Math.PI * 2,
+        flowSpeed: Math.random() * 0.0004 + 0.0002,
+        vx: 0,
+        vy: 0
+      });
+    }
+
+    const drawShape = (p) => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color;
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = 1.2;
+
+      ctx.beginPath();
+      if (p.shape === 'circle' || p.shape === 'dot') {
+        ctx.arc(0, 0, p.shape === 'dot' ? p.size * 0.6 : p.size, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.shape === 'triangle') {
+        ctx.moveTo(0, -p.size);
+        ctx.lineTo(p.size, p.size);
+        ctx.lineTo(-p.size, p.size);
+        ctx.closePath();
+        if (p.size > 2) ctx.stroke(); else ctx.fill();
+      } else if (p.shape === 'cross') {
+        ctx.moveTo(-p.size, 0);
+        ctx.lineTo(p.size, 0);
+        ctx.moveTo(0, -p.size);
+        ctx.lineTo(0, p.size);
+        ctx.stroke();
+      }
+      ctx.restore();
+    };
+
+    const render = (time) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach((p) => {
+        // Subtle floating 
+        const flowX = Math.sin(time * p.flowSpeed + p.flowOffset) * 12;
+        const flowY = Math.cos(time * p.flowSpeed * 0.8 + p.flowOffset) * 10;
+        
+        const targetX = p.baseX + flowX;
+        let targetY = p.baseY + flowY;
+        
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        // Stronger mouse repel physics
+        if (dist < mouse.radius) {
+          const force = Math.pow((mouse.radius - dist) / mouse.radius, 1.2);
+          const angle = Math.atan2(dy, dx);
+          p.vx += Math.cos(angle) * force * 1.5; // Reduced push
+          p.vy += Math.sin(angle) * force * 1.5;
+        }
+
+        // Snappier spring physics pulling back to target
+        const spring = 0.05;
+        const friction = 0.86;
+
+        p.vx += (targetX - p.x) * spring;
+        p.vy += (targetY - p.y) * spring;
+
+        p.vx *= friction;
+        p.vy *= friction;
+
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        // Rotation reacting to movement
+        p.rotation += p.rotationSpeed + (Math.abs(p.vx) + Math.abs(p.vy)) * 0.005;
+
+        drawShape(p);
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    animationFrameId = requestAnimationFrame(render);
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isDark]);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+    </div>
+  );
+}
 
 /* ─── Icons ────────────────────────────────────────────────────── */
 const ICONS = {
@@ -220,35 +372,27 @@ export default function ContactSection({ scrollContainer }) {
 
   return (
     <ScrollSection scrollContainer={scrollContainer} scaleRange={[0.9, 1, 1]} opacityRange={[0, 1, 1]} yRange={[100, 0, 0]} blurRange={[8, 0, 0]} entryOnly>
-      <section id="contact" data-section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 sm:px-12 lg:px-20 py-24 sm:py-32">
-        <div className="max-w-2xl mx-auto w-full text-center" style={{ zIndex: 10 }}>
+      <section id="contact" data-section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 sm:px-12 lg:px-20 py-24 sm:py-32 overflow-hidden">
+        
+        <div className="max-w-4xl mx-auto w-full text-center" style={{ zIndex: 10 }}>
 
           <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }} className="mb-6"
-          >
-            <span className="font-mono text-[9px] sm:text-[10px] tracking-[0.5em]"
-              style={{ color: 'rgba(110, 105, 130, 0.6)' }}>
-              05 // CONTACT ME
-            </span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.92 }}
+            initial={{ opacity: 0, y: 40, scale: 0.97 }}
             animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-8"
           >
-            <GlitchText text="LET'S BUILD" as="h2" trigger={isInView ? 'mount' : 'hover'} duration={900}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight text-white" />
-            <GlitchText text="SOMETHING" as="h2" trigger={isInView ? 'mount' : 'hover'} duration={900} delay={200}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tight text-white" />
+            <h2 className="text-5xl sm:text-6xl md:text-[7rem] lg:text-[8.5rem] font-display font-bold tracking-tighter leading-[0.9]"
+                style={{ color: isDark ? '#ffffff' : '#000000' }}>
+              Let&apos;s work<br/>together!
+            </h2>
           </motion.div>
 
           <motion.p
-            className="font-body text-xs sm:text-sm mt-6 max-w-sm mx-auto leading-relaxed"
-            style={{ color: 'rgba(120, 115, 140, 0.7)' }}
+            className="font-body text-sm sm:text-base mt-8 max-w-md mx-auto leading-relaxed"
+            style={{ color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}
             initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.4 }}
           >
             Got an idea? Want to collaborate? Or just passing through? I&apos;m always open to interesting conversations.
           </motion.p>

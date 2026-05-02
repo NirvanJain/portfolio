@@ -145,8 +145,8 @@ function SmokeEffect({ isHovering, mousePos }) {
         vx: Math.cos(angle) * speed * 0.5,
         vy: -Math.random() * 1.5 - 1.2,
         age: 0,
-        maxAge: Math.random() * 80 + 140,
-        size: Math.random() * 25 + 20,
+        maxAge: Math.random() * 40 + 80,
+        size: Math.random() * 15 + 10,
         growth: Math.random() * 0.6 + 0.25,
         phase: Math.random() * Math.PI * 2,
         rotation: Math.random() * Math.PI * 2,
@@ -164,8 +164,8 @@ function SmokeEffect({ isHovering, mousePos }) {
       
       if (isHovering && hoverStartTime.current && Date.now() - hoverStartTime.current > 800) {
         // Spawn in small bursts for wispy clumps
-        if (Math.random() < 0.25) {
-          const count = Math.random() < 0.3 ? 2 : 1
+        if (Math.random() < 0.15) {
+          const count = Math.random() < 0.2 ? 2 : 1
           for (let j = 0; j < count; j++) {
             spawnParticle(mousePos.current.x, mousePos.current.y)
           }

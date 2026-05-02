@@ -44,9 +44,9 @@ function createRocketGeometry() {
 }
 
 /* ===== ROCKETS, STARS & SMOKE ===== */
-const ROCKET_N = 30
-const STAR_N = 50
-const SMOKE_N = 200
+const ROCKET_N = 10
+const STAR_N = 20
+const SMOKE_N = 80
 
 const _ndc = new THREE.Vector3()
 const _rayDir = new THREE.Vector3()
