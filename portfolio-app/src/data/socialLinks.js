@@ -7,11 +7,11 @@ export const SOCIAL_LINKS = [
     shortLabel: 'GH',
   },
   {
-    id: 'spotify',
-    label: 'SPOTIFY',
-    value: 'nirvan',
-    href: 'https://open.spotify.com/user/31lenipdu5hkj3kdbfugzbjcncpm',
-    shortLabel: 'SP',
+    id: 'gmail',
+    label: 'GMAIL',
+    value: 'jainnirvan070@gmail.com',
+    href: 'mailto:jainnirvan070@gmail.com',
+    shortLabel: 'GM',
   },
   {
     id: 'linkedin',
@@ -26,5 +26,12 @@ export const SOCIAL_LINKS = [
     value: '@NirvanJain25',
     href: 'https://x.com/NirvanJain25',
     shortLabel: 'X',
+  },
+  {
+    id: 'spotify',
+    label: 'SPOTIFY',
+    value: 'nirvan',
+    href: 'https://open.spotify.com/user/31lenipdu5hkj3kdbfugzbjcncpm',
+    shortLabel: 'SP',
   },
 ]

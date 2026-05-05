@@ -186,6 +186,13 @@ const ICONS = {
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.912-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   ),
+  gmail: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
+      strokeLinecap="round" strokeLinejoin="round" width="17" height="17">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  ),
 }
 
 /* ─── Contact card ─────────────────────────────────────────────── */
@@ -206,7 +213,7 @@ function ContactCard({ link, index, scrollProgress, isDark }) {
       href={link.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative flex items-center gap-4 rounded-2xl overflow-hidden w-full"
+      className="relative flex items-center gap-4 rounded-xl overflow-hidden w-full"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       animate={{
@@ -218,34 +225,34 @@ function ContactCard({ link, index, scrollProgress, isDark }) {
           : (isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'),
       }}
       transition={{ duration: 0.2 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.015 }}
       style={{
         opacity, y,
-        padding: '12px 16px',
+        padding: '10px 14px',
         border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.05)',
         backdropFilter: 'blur(10px)',
       }}
     >
       <motion.span 
-        className="flex h-10 w-10 items-center justify-center rounded-xl"
+        className="flex h-9 w-9 items-center justify-center rounded-lg shrink-0"
         animate={{
           background: hovered ? (isDark ? '#fff' : '#000') : 'transparent',
           color: hovered ? (isDark ? '#000' : '#fff') : (isDark ? '#fff' : '#000'),
         }}
       >
-        <div className="scale-[0.9]">{ICONS[link.id]}</div>
+        <div className="scale-[0.85]">{ICONS[link.id]}</div>
       </motion.span>
       
       <div className="flex-1 flex justify-between items-center">
         <div>
-          <div className="font-mono text-[9px] tracking-[0.2em] opacity-50 mb-0.5">{link.label}</div>
-          <div className="font-display text-sm font-bold tracking-wide" style={{ color: isDark ? '#fff' : '#000' }}>
+          <div className="font-mono text-[9px] tracking-[0.2em] opacity-40 mb-0.5">{link.label}</div>
+          <div className="font-display text-[12px] sm:text-[14px] font-bold tracking-wide" style={{ color: isDark ? '#fff' : '#000' }}>
             {link.value}
           </div>
         </div>
         <motion.span
           className="font-mono opacity-40 text-sm"
-          animate={{ x: hovered ? 4 : 0, opacity: hovered ? 1 : 0.4 }}
+          animate={{ x: hovered ? 3 : 0, opacity: hovered ? 1 : 0.4 }}
         >
           ↗
         </motion.span>
@@ -275,68 +282,66 @@ export default function ContactSection({ scrollContainer }) {
     <ScrollSection scrollContainer={scrollContainer} scaleRange={[0.9, 1, 1]} opacityRange={[0, 1, 1]} yRange={[100, 0, 0]} blurRange={[8, 0, 0]} entryOnly>
       <section id="contact" data-section ref={ref} className="relative min-h-screen flex items-center justify-center px-6 sm:px-12 lg:px-20 py-24 sm:py-32 overflow-hidden">
         
-        <div className="max-w-4xl mx-auto w-full text-center" style={{ zIndex: 10 }}>
+        <div className="max-w-6xl mx-auto w-full relative z-10" style={{ zIndex: 10 }}>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.97 }}
-            animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-8"
-          >
-            <h2 className="text-5xl sm:text-6xl md:text-[7rem] lg:text-[8.5rem] font-display font-bold tracking-tighter leading-[0.9]"
-                style={{ color: isDark ? '#ffffff' : '#000000' }}>
-              Let&apos;s work<br/>together!
-            </h2>
-          </motion.div>
+          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-16 lg:gap-24">
+            
+            {/* Left Column: Heading & Description */}
+            <div className="flex-1 text-center lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.97 }}
+                animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+                transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="mb-8"
+              >
+                <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-display font-bold tracking-tighter leading-[0.95]"
+                    style={{ color: isDark ? '#ffffff' : '#000000' }}>
+                  Let&apos;s work<br/>together!
+                </h2>
+              </motion.div>
 
-          <motion.p
-            className="font-body text-sm sm:text-base mt-8 max-w-md mx-auto leading-relaxed"
-            style={{ color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}
-            initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.4 }}
-          >
-            Got an idea? Want to collaborate? Or just passing through? I&apos;m always open to interesting conversations.
-          </motion.p>
+              <motion.p
+                className="font-body text-sm sm:text-lg mt-8 max-w-md mx-auto lg:mx-0 leading-relaxed"
+                style={{ color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}
+                initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.4 }}
+              >
+                Got an idea? Want to collaborate? Or just passing through? I&apos;m always open to interesting conversations.
+              </motion.p>
 
-          <motion.div
-            className="mt-8 mx-auto h-px max-w-[80px]"
-            style={{ background: 'rgba(120, 110, 160, 0.2)' }}
-            initial={{ scaleX: 0 }} animate={isInView ? { scaleX: 1 } : {}}
-            transition={{ delay: 0.8, duration: 1 }}
-          />
-
-          {/* Social List */}
-          <div className="mt-16 sm:mt-24 max-w-md mx-auto text-left">
-            <motion.div
-              className="mb-6 flex items-center justify-between"
-              initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.85 }}
-            >
-              <span className="font-mono text-[10px] tracking-[0.4em]"
-                style={{ color: 'rgba(100, 95, 120, 0.55)' }}>SOCIALS</span>
-            </motion.div>
-
-            <div className="space-y-3">
-              {SOCIAL_LINKS.map((link, i) => (
-                <ContactCard
-                  key={link.id}
-                  link={link}
-                  index={i}
-                  scrollProgress={scrollYProgress}
-                  isDark={isDark}
-                />
-              ))}
+              <motion.div
+                className="mt-10 h-px max-w-[80px] mx-auto lg:mx-0"
+                style={{ background: 'rgba(120, 110, 160, 0.2)' }}
+                initial={{ scaleX: 0 }} animate={isInView ? { scaleX: 1 } : {}}
+                transition={{ delay: 0.8, duration: 1 }}
+              />
             </div>
-          </div>
 
-          <motion.div
-            className="mt-20 font-mono text-[9px] tracking-[0.28em]"
-            style={{ color: 'rgba(90, 86, 108, 0.4)' }}
-            initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 1.5 }}
-          >
-            DESIGNED &amp; BUILT BY NIRVAN JAIN / {new Date().getFullYear()}
-          </motion.div>
+            {/* Right Column: Social List */}
+            <div className="flex-1 w-full max-w-md">
+              <motion.div
+                className="mb-8 flex items-center justify-between"
+                initial={{ opacity: 0 }} animate={isInView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.85 }}
+              >
+                <span className="font-mono text-[11px] tracking-[0.4em]"
+                  style={{ color: 'rgba(100, 95, 120, 0.55)' }}>SOCIALS</span>
+              </motion.div>
+
+              <div className="grid grid-cols-1 gap-4">
+                {SOCIAL_LINKS.map((link, i) => (
+                  <ContactCard
+                    key={link.id}
+                    link={link}
+                    index={i}
+                    scrollProgress={scrollYProgress}
+                    isDark={isDark}
+                  />
+                ))}
+              </div>
+            </div>
+
+          </div>
 
         </div>
       </section>
