@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { motion, useScroll, useTransform, useInView, useSpring, useMotionValue, useMotionTemplate, AnimatePresence } from 'framer-motion'
 import profilePic from '../config/pfp.jpg'
 
 const GLITCH_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#<>[]{}|~'
@@ -269,38 +269,24 @@ function SmokeEffect({ isHovering, mousePos }) {
 // Sleek, high-end circular frame with tumbling flip and massive smoke
 function PhotoFrame({ isInView, scrollYProgress }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [hasFlipped, setHasFlipped] = useState(false)
   const mouseIn = useRef(false)
   const [isDark, setIsDark] = useState(true)
   const hoverRef = useRef(null)
+  
   const scaleScroll = useTransform(scrollYProgress, [0, 1], [1, 0.6])
   const opacityScroll = useTransform(scrollYProgress, [0, 0.7], [1, 0])
   const mousePos = useRef({ x: 0, y: 0 })
 
-  useEffect(() => {
-    // Initial intro flip after entry animation
-    let revertTimer
-    const introTimer = setTimeout(() => {
-      if (hoverRef.current) {
-        const rect = hoverRef.current.getBoundingClientRect()
-        mousePos.current = {
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2
-        }
-      }
-      setIsHovered(true)
-      
-      revertTimer = setTimeout(() => {
-        if (!mouseIn.current) {
-          setIsHovered(false)
-        }
-      }, 2000)
-    }, 2200)
-    
-    return () => {
-      clearTimeout(introTimer)
-      clearTimeout(revertTimer)
-    }
-  }, [])
+  // --- 3D Hover Tracking ---
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  
+  const smoothX = useSpring(mouseX, { stiffness: 300, damping: 30 })
+  const smoothY = useSpring(mouseY, { stiffness: 300, damping: 30 })
+  
+  const tiltX = useTransform(smoothY, [-150, 150], [15, -15])
+  const tiltY = useTransform(smoothX, [-150, 150], [-15, 15])
 
   useEffect(() => {
     const check = () => {
@@ -313,10 +299,27 @@ function PhotoFrame({ isInView, scrollYProgress }) {
   }, [])
 
   const handleMouseMove = (e) => {
-    mousePos.current = {
-      x: e.clientX,
-      y: e.clientY
-    }
+    mousePos.current = { x: e.clientX, y: e.clientY }
+    
+    if (!hoverRef.current) return
+    const rect = hoverRef.current.getBoundingClientRect()
+    const x = e.clientX - (rect.left + rect.width / 2)
+    const y = e.clientY - (rect.top + rect.height / 2)
+    mouseX.set(x)
+    mouseY.set(y)
+  }
+
+  const handleMouseEnter = () => {
+    mouseIn.current = true
+    setIsHovered(true)
+    setHasFlipped(true)
+  }
+
+  const handleMouseLeave = () => {
+    mouseIn.current = false
+    setIsHovered(false)
+    mouseX.set(0)
+    mouseY.set(0)
   }
 
   return (
@@ -338,24 +341,59 @@ function PhotoFrame({ isInView, scrollYProgress }) {
         <motion.div
           ref={hoverRef}
           className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-2xl cursor-pointer"
-          onMouseEnter={() => { mouseIn.current = true; setIsHovered(true) }}
-          onMouseLeave={() => { mouseIn.current = false; setIsHovered(false) }}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           onMouseMove={handleMouseMove}
           animate={{ scale: isHovered ? 1.15 : 1 }}
           transition={{ scale: { duration: 0.5, ease: "easeOut" } }}
+          style={{
+            rotateX: tiltX,
+            rotateY: tiltY,
+            transformStyle: 'preserve-3d',
+          }}
         >
           <motion.div 
             className="absolute inset-0 rounded-2xl p-[2px] group"
             animate={{ 
-              rotateY: isHovered ? 720 : 0,
-              rotateZ: isHovered ? [0, -5, 5, -2, 0] : 0
+              rotateY: isHovered ? 1440 : 0,
             }}
             transition={{ 
-              rotateY: { duration: 2, ease: [0.16, 1, 0.3, 1] },
-              rotateZ: { duration: 2, ease: "easeInOut" }
+              rotateY: { duration: 2.5, ease: [0.16, 1, 0.3, 1] },
             }}
             style={{ transformStyle: 'preserve-3d', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}
           >
+            {/* Floating particles inside frame */}
+            <AnimatePresence>
+              {isHovered && (
+                <>
+                  {[...Array(6)].map((_, i) => (
+                    <motion.div
+                      key={`particle-${i}`}
+                      className="absolute w-1 h-1 rounded-full bg-white z-0"
+                      initial={{ x: '50%', y: '50%', opacity: 1, scale: 0 }}
+                      animate={{ 
+                        x: `${Math.random() * 100}%`, 
+                        y: `${Math.random() * 100}%`,
+                        opacity: 0,
+                        scale: Math.random() * 3 + 1
+                      }}
+                      transition={{ 
+                        duration: Math.random() * 0.8 + 0.4, 
+                        ease: "easeOut",
+                        repeat: Infinity,
+                        repeatDelay: Math.random() * 1
+                      }}
+                      style={{
+                        boxShadow: isDark ? '0 0 10px 2px rgba(255, 255, 255, 0.8)' : '0 0 10px 2px rgba(0, 0, 0, 0.5)',
+                        backgroundColor: isDark ? '#fff' : '#000',
+                        transform: 'translateZ(30px)' // pop out slightly
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+            </AnimatePresence>
+
             {/* Glowing gradient rim background */}
             <div 
               className="absolute inset-0 rounded-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"

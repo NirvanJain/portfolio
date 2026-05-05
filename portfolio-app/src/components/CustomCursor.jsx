@@ -1,5 +1,133 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
+
+function SmokeTrail({ mousePos, visible }) {
+  const canvasRef = useRef(null)
+  const particles = useRef([])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    let animationId
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+    let lastScrollY = window.scrollY
+
+    const render = () => {
+      const currentScrollY = window.scrollY
+      const scrollDelta = currentScrollY - lastScrollY
+      lastScrollY = currentScrollY
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      // Spawn particles if scrolling even if mouse is still
+      if (Math.abs(scrollDelta) > 0.1 && visible) {
+        const count = Math.random() > 0.5 ? 2 : 1
+        for (let i = 0; i < count; i++) {
+          particles.current.push({
+            x: mousePos.x + (Math.random() - 0.5) * 5,
+            y: mousePos.y + (Math.random() - 0.5) * 5,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: (Math.random() - 0.5) * 0.8 - 0.2, // slight upward drift
+            size: Math.random() * 4 + 4,
+            age: 0,
+            life: Math.random() * 30 + 40 // 40-70 frames
+          })
+        }
+      }
+
+      // Update and draw particles
+      for (let i = particles.current.length - 1; i >= 0; i--) {
+        const p = particles.current[i]
+        p.age++
+        if (p.age >= p.life) {
+          particles.current.splice(i, 1)
+          continue
+        }
+
+        p.x += p.vx
+        p.y += p.vy - scrollDelta // Adjust for scroll
+        p.size += 0.2 // Grow slightly
+        p.vx *= 0.98
+        p.vy *= 0.98
+
+        const opacity = Math.max(0, 1 - p.age / p.life)
+
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.beginPath()
+        ctx.arc(0, 0, p.size, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(180, 180, 200, ${opacity * 0.15})` // subtle white/gray smoke
+        ctx.fill()
+        ctx.restore()
+      }
+
+      animationId = requestAnimationFrame(render)
+    }
+    render()
+
+    return () => {
+      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(animationId)
+    }
+  }, [])
+
+  // Spawn particles on mouse move
+  useEffect(() => {
+    if (!visible) return
+
+    // Spawn 1-2 particles
+    const count = Math.random() > 0.5 ? 2 : 1
+    for (let i = 0; i < count; i++) {
+      particles.current.push({
+        x: mousePos.x + (Math.random() - 0.5) * 5,
+        y: mousePos.y + (Math.random() - 0.5) * 5,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: (Math.random() - 0.5) * 0.8 - 0.2, // slight upward drift
+        size: Math.random() * 4 + 4,
+        age: 0,
+        life: Math.random() * 30 + 40 // 40-70 frames
+      })
+    }
+  }, [mousePos, visible])
+
+  // Spawn burst on click
+  useEffect(() => {
+    const onBurst = () => {
+      if (!visible) return
+      const count = 12 // Firework burst size
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2
+        const speed = Math.random() * 2.5 + 1
+        particles.current.push({
+          x: mousePos.x,
+          y: mousePos.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: Math.random() * 4 + 4,
+          age: 0,
+          life: Math.random() * 20 + 30
+        })
+      }
+    }
+    window.addEventListener('mousedown', onBurst)
+    return () => window.removeEventListener('mousedown', onBurst)
+  }, [mousePos, visible])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-[99998]"
+      style={{ opacity: visible ? 1 : 0, filter: 'blur(4px)' }}
+    />
+  )
+}
 
 export default function CustomCursor() {
   const [pos, setPos] = useState({ x: -100, y: -100 })
@@ -53,6 +181,8 @@ export default function CustomCursor() {
 
   return (
     <>
+      <SmokeTrail mousePos={pos} visible={visible} />
+
       {/* Outer ring with spring follow */}
       <motion.div
         className="fixed top-0 left-0 rounded-full pointer-events-none mix-blend-difference"
