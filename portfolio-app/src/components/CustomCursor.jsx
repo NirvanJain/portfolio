@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 function SmokeTrail({ mousePos, visible }) {
   const canvasRef = useRef(null)
   const particles = useRef([])
+  const prevPos = useRef({ x: -1, y: -1 })
+  const timeRef = useRef(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -19,30 +21,43 @@ function SmokeTrail({ mousePos, visible }) {
     window.addEventListener('resize', resize)
     let lastScrollY = window.scrollY
 
+    // Simple noise for turbulence
+    const noise = (x, y) => {
+      const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453
+      return n - Math.floor(n)
+    }
+
+    const spawnPuff = (x, y, vxBase, vyBase) => {
+      const angle = Math.random() * Math.PI * 2
+      particles.current.push({
+        x: x + (Math.random() - 0.5) * 10,
+        y: y + (Math.random() - 0.5) * 10,
+        vx: vxBase * 0.3 + Math.cos(angle) * 0.4,
+        vy: vyBase * 0.3 - Math.random() * 1.2 - 0.6,
+        size: Math.random() * 8 + 10,
+        growth: Math.random() * 0.8 + 0.4,
+        age: 0,
+        life: Math.random() * 50 + 60,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.04,
+        stretch: Math.random() * 0.4 + 0.6,
+        phase: Math.random() * Math.PI * 2,
+        density: Math.random() * 0.4 + 0.6,
+        turbX: Math.random() * 100,
+        turbY: Math.random() * 100,
+      })
+    }
+
     const render = () => {
       const currentScrollY = window.scrollY
       const scrollDelta = currentScrollY - lastScrollY
       lastScrollY = currentScrollY
+      timeRef.current += 0.016
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Spawn particles if scrolling even if mouse is still
-      if (Math.abs(scrollDelta) > 0.1 && visible) {
-        const count = Math.random() > 0.5 ? 2 : 1
-        for (let i = 0; i < count; i++) {
-          particles.current.push({
-            x: mousePos.x + (Math.random() - 0.5) * 5,
-            y: mousePos.y + (Math.random() - 0.5) * 5,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: (Math.random() - 0.5) * 0.8 - 0.2, // slight upward drift
-            size: Math.random() * 4 + 4,
-            age: 0,
-            life: Math.random() * 30 + 40 // 40-70 frames
-          })
-        }
-      }
+      const t = timeRef.current
 
-      // Update and draw particles
       for (let i = particles.current.length - 1; i >= 0; i--) {
         const p = particles.current[i]
         p.age++
@@ -51,19 +66,47 @@ function SmokeTrail({ mousePos, visible }) {
           continue
         }
 
-        p.x += p.vx
-        p.y += p.vy - scrollDelta // Adjust for scroll
-        p.size += 0.2 // Grow slightly
-        p.vx *= 0.98
-        p.vy *= 0.98
+        // Turbulence — layered sine waves for organic drift
+        const turbulence =
+          Math.sin(p.phase + p.age * 0.025) * 0.5 +
+          Math.sin(p.phase * 2.1 + p.age * 0.04) * 0.25 +
+          (noise(p.turbX + t * 0.4, p.turbY + t * 0.3) - 0.5) * 0.6
 
-        const opacity = Math.max(0, 1 - p.age / p.life)
+        p.x += p.vx + turbulence
+        p.y += p.vy - scrollDelta
+        p.vy *= 0.997
+        p.vx *= 0.994
+        p.size += p.growth
+        p.rotation += p.rotSpeed
 
+        // Lifecycle alpha: quick fade-in, hold, long fade-out
+        const life = p.age / p.life
+        let alpha
+        if (life < 0.08) {
+          alpha = (life / 0.08) * 0.12
+        } else if (life > 0.5) {
+          alpha = ((1 - life) / 0.5) * 0.12
+        } else {
+          alpha = 0.12
+        }
+        alpha *= p.density
+
+        // Draw as rotated ellipse with radial gradient for soft cloud look
         ctx.save()
         ctx.translate(p.x, p.y)
+        ctx.rotate(p.rotation)
+        ctx.scale(1, p.stretch)
+
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size)
+        grad.addColorStop(0, `rgba(220, 210, 245, ${alpha})`)
+        grad.addColorStop(0.25, `rgba(200, 185, 235, ${alpha * 0.8})`)
+        grad.addColorStop(0.55, `rgba(180, 165, 220, ${alpha * 0.35})`)
+        grad.addColorStop(0.8, `rgba(160, 145, 210, ${alpha * 0.08})`)
+        grad.addColorStop(1, `rgba(140, 130, 200, 0)`)
+
         ctx.beginPath()
         ctx.arc(0, 0, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(180, 180, 200, ${opacity * 0.15})` // subtle white/gray smoke
+        ctx.fillStyle = grad
         ctx.fill()
         ctx.restore()
       }
@@ -78,21 +121,39 @@ function SmokeTrail({ mousePos, visible }) {
     }
   }, [])
 
-  // Spawn particles on mouse move
+  // Spawn smoke puffs on mouse move
   useEffect(() => {
     if (!visible) return
 
-    // Spawn 1-2 particles
-    const count = Math.random() > 0.5 ? 2 : 1
+    const dx = prevPos.current.x >= 0 ? mousePos.x - prevPos.current.x : 0
+    const dy = prevPos.current.y >= 0 ? mousePos.y - prevPos.current.y : 0
+    prevPos.current = { x: mousePos.x, y: mousePos.y }
+
+    const speed = Math.sqrt(dx * dx + dy * dy)
+    const count = speed > 8 ? 3 : speed > 3 ? 2 : 1
+
     for (let i = 0; i < count; i++) {
+      spawnPuff(mousePos.x, mousePos.y, dx * 0.05, dy * 0.05)
+    }
+
+    function spawnPuff(x, y, vxBase, vyBase) {
+      const angle = Math.random() * Math.PI * 2
       particles.current.push({
-        x: mousePos.x + (Math.random() - 0.5) * 5,
-        y: mousePos.y + (Math.random() - 0.5) * 5,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8 - 0.2, // slight upward drift
-        size: Math.random() * 4 + 4,
+        x: x + (Math.random() - 0.5) * 10,
+        y: y + (Math.random() - 0.5) * 10,
+        vx: vxBase + Math.cos(angle) * 0.4,
+        vy: vyBase - Math.random() * 1.2 - 0.6,
+        size: Math.random() * 8 + 10,
+        growth: Math.random() * 0.8 + 0.4,
         age: 0,
-        life: Math.random() * 30 + 40 // 40-70 frames
+        life: Math.random() * 50 + 60,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.04,
+        stretch: Math.random() * 0.4 + 0.6,
+        phase: Math.random() * Math.PI * 2,
+        density: Math.random() * 0.4 + 0.6,
+        turbX: Math.random() * 100,
+        turbY: Math.random() * 100,
       })
     }
   }, [mousePos, visible])
@@ -101,18 +162,25 @@ function SmokeTrail({ mousePos, visible }) {
   useEffect(() => {
     const onBurst = () => {
       if (!visible) return
-      const count = 12 // Firework burst size
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < 15; i++) {
         const angle = Math.random() * Math.PI * 2
-        const speed = Math.random() * 2.5 + 1
+        const speed = Math.random() * 2.5 + 1.5
         particles.current.push({
-          x: mousePos.x,
-          y: mousePos.y,
+          x: mousePos.x + (Math.random() - 0.5) * 6,
+          y: mousePos.y + (Math.random() - 0.5) * 6,
           vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          size: Math.random() * 4 + 4,
+          vy: Math.sin(angle) * speed - 0.5,
+          size: Math.random() * 10 + 12,
+          growth: Math.random() * 1.0 + 0.5,
           age: 0,
-          life: Math.random() * 20 + 30
+          life: Math.random() * 40 + 40,
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.06,
+          stretch: Math.random() * 0.3 + 0.5,
+          phase: Math.random() * Math.PI * 2,
+          density: Math.random() * 0.5 + 0.5,
+          turbX: Math.random() * 100,
+          turbY: Math.random() * 100,
         })
       }
     }
@@ -124,7 +192,7 @@ function SmokeTrail({ mousePos, visible }) {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-[99998]"
-      style={{ opacity: visible ? 1 : 0, filter: 'blur(4px)' }}
+      style={{ opacity: visible ? 1 : 0, filter: 'blur(3px)' }}
     />
   )
 }
