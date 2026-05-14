@@ -5,7 +5,6 @@ const GLITCH_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#<>[]{}|~'
 const DEFAULT_NAME = 'VOIDRA'
 const HOVER_NAME   = 'NIRVAN JAIN'
 const TICK         = 30
-//cvbn
 /*───HoverName──────────────────────────────────────────────────*/
 // Default: VOIDRA — hover reveals NIRVAN JAIN — leave reverts
 function HoverName({ className }) {
