@@ -6,6 +6,17 @@ function SmokeTrail({ mousePos, visible }) {
   const particles = useRef([])
   const prevPos = useRef({ x: -1, y: -1 })
   const timeRef = useRef(0)
+  const [isDark, setIsDark] = useState(true)
+
+  useEffect(() => {
+    const check = () => {
+      setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+    }
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -98,11 +109,19 @@ function SmokeTrail({ mousePos, visible }) {
         ctx.scale(1, p.stretch)
 
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size)
-        grad.addColorStop(0, `rgba(220, 210, 245, ${alpha})`)
-        grad.addColorStop(0.25, `rgba(200, 185, 235, ${alpha * 0.8})`)
-        grad.addColorStop(0.55, `rgba(180, 165, 220, ${alpha * 0.35})`)
-        grad.addColorStop(0.8, `rgba(160, 145, 210, ${alpha * 0.08})`)
-        grad.addColorStop(1, `rgba(140, 130, 200, 0)`)
+        if (isDark) {
+          grad.addColorStop(0, `rgba(220, 210, 245, ${alpha})`)
+          grad.addColorStop(0.25, `rgba(200, 185, 235, ${alpha * 0.8})`)
+          grad.addColorStop(0.55, `rgba(180, 165, 220, ${alpha * 0.35})`)
+          grad.addColorStop(0.8, `rgba(160, 145, 210, ${alpha * 0.08})`)
+          grad.addColorStop(1, `rgba(140, 130, 200, 0)`)
+        } else {
+          grad.addColorStop(0, `rgba(60, 40, 80, ${alpha})`)
+          grad.addColorStop(0.25, `rgba(60, 40, 80, ${alpha * 0.8})`)
+          grad.addColorStop(0.55, `rgba(60, 40, 80, ${alpha * 0.35})`)
+          grad.addColorStop(0.8, `rgba(60, 40, 80, ${alpha * 0.08})`)
+          grad.addColorStop(1, `rgba(60, 40, 80, 0)`)
+        }
 
         ctx.beginPath()
         ctx.arc(0, 0, p.size, 0, Math.PI * 2)
@@ -119,7 +138,7 @@ function SmokeTrail({ mousePos, visible }) {
       window.removeEventListener('resize', resize)
       cancelAnimationFrame(animationId)
     }
-  }, [])
+  }, [isDark])
 
   // Spawn smoke puffs on mouse move
   useEffect(() => {

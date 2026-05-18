@@ -115,7 +115,9 @@ export default function GlobalSmokeStream({ scrollContainer }) {
         // Draw — exact same style as cursor smoke
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(180, 180, 200, ${opacity * 0.15})`
+        ctx.fillStyle = isDark 
+          ? `rgba(180, 180, 200, ${opacity * 0.15})`
+          : `rgba(60, 40, 80, ${opacity * 0.15})`
         ctx.fill()
       }
 
@@ -157,7 +159,9 @@ export default function GlobalSmokeStream({ scrollContainer }) {
 
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(180, 180, 200, ${opacity * 0.15})`
+        ctx.fillStyle = isDark 
+          ? `rgba(180, 180, 200, ${opacity * 0.15})`
+          : `rgba(60, 40, 80, ${opacity * 0.15})`
         ctx.fill()
       }
 
