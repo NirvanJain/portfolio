@@ -73,23 +73,17 @@ export default function AboutSection({ scrollContainer }) {
             <div className="space-y-5">
               <Reveal delay={0.2} direction="right">
                 <p className="font-body text-sm sm:text-base text-white/50 leading-relaxed">
-                  I&apos;m a full-stack developer and creative technologist who obsesses 
-                  over details. I don&apos;t just write code — I craft experiences that 
-                  make people feel something.
+                  I&apos;m a developer who enjoys building across the entire technology stack, using Java, JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, PostgreSQL, Docker, and Git to turn ideas into real products. I enjoy creating applications that are both functional and thoughtfully engineered.
                 </p>
               </Reveal>
               <Reveal delay={0.3} direction="right">
                 <p className="font-body text-sm sm:text-base text-white/50 leading-relaxed">
-                  From interactive 3D environments to clean, scalable backends, I work 
-                  across the entire stack. I believe the best digital products are the 
-                  ones that surprise you — the ones that feel alive.
+                  Beyond development, I&apos;m deeply interested in system design, distributed systems, compiler engineering, and the technologies that power software at scale. I enjoy understanding systems from the ground up, from architecture and infrastructure to the code that drives them.
                 </p>
               </Reveal>
               <Reveal delay={0.4} direction="right">
                 <p className="font-body text-sm sm:text-base text-white/50 leading-relaxed">
-                  When I&apos;m not coding, I&apos;m exploring creative tools, experimenting 
-                  with WebGL, or diving into the latest frameworks. I&apos;m always building, 
-                  always learning, always pushing what&apos;s possible.
+                  Open source, experimentation, and curiosity fuel everything I build. Whether I&apos;m exploring Web3, optimizing algorithms, contributing to projects, or chasing another late-night tech rabbit hole, I&apos;m always looking for the next challenge worth solving.
                 </p>
               </Reveal>
               <Reveal delay={0.6} direction="scale">
