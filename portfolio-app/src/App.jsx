@@ -8,7 +8,7 @@ import Scene3D from './components/Scene3D'
 import Terminal from './components/Terminal'
 import ThemeToggle from './components/ThemeToggle'
 import ScrollLine from './components/ScrollLine'
-import GlobalSmokeStream from './components/GlobalSmokeStream'
+
 
 
 // Sections
@@ -213,9 +213,6 @@ export default function App() {
           <div className="scanline-overlay" />
           <div className="noise-bg" />
           <div className="vignette" />
-
-          {/* Global Smoke Stream */}
-          <GlobalSmokeStream scrollContainer={mainRef} />
 
           {/* Scrollable content */}
           <main

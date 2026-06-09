@@ -43,10 +43,9 @@ function createRocketGeometry() {
   return new THREE.ShapeGeometry(s)
 }
 
-/* ===== ROCKETS, STARS & SMOKE ===== */
+/* ===== ROCKETS & STARS ===== */
 const ROCKET_N = 10
 const STAR_N = 20
-const SMOKE_N = 80
 
 const _ndc = new THREE.Vector3()
 const _rayDir = new THREE.Vector3()
@@ -68,7 +67,6 @@ const genRockets = () => Array.from({ length: ROCKET_N }, () => {
     scale: 0.6 + Math.random() * 0.8,
     bobPh: Math.random() * Math.PI * 2,
     bobSpd: 0.2 + Math.random() * 0.3,
-    smokeCD: 0,
   }
 })
 
@@ -90,23 +88,15 @@ const genStars = () => Array.from({ length: STAR_N }, () => {
   }
 })
 
-const genSmokes = () => Array.from({ length: SMOKE_N }, () => ({
-  x: 0, y: 0, z: -100, vx: 0, vy: 0,
-  life: 0, maxLife: 1, scale: 0,
-}))
-
 function InteractiveField({ theme = 'dark' }) {
   const rocketMesh = useRef()
   const starMesh = useRef()
-  const smokeMesh = useRef()
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   const wireColor = theme === 'light' ? '#1a1a1a' : '#ffffff'
-  const smokeColor = theme === 'light' ? '#666666' : '#999999'
 
   const rocketGeo = useMemo(() => createRocketGeometry(), [])
   const starGeo = useMemo(() => createStarGeometry(), [])
-  const smokeGeo = useMemo(() => new THREE.CircleGeometry(0.04, 6), [])
 
   // ── Data ──
   const rockets = useRef(null)
@@ -114,21 +104,6 @@ function InteractiveField({ theme = 'dark' }) {
 
   const stars = useRef(null)
   if (stars.current == null) stars.current = genStars()
-
-  const smokes = useRef(null)
-  if (smokes.current == null) smokes.current = genSmokes()
-
-  const smokeIdx = useRef(0)
-  function emitSmoke(x, y, z, vx, vy) {
-    const p = smokes.current[smokeIdx.current % SMOKE_N]
-    smokeIdx.current++
-    p.x = x; p.y = y; p.z = z
-    p.vx = -vx * 0.1 + (Math.random() - 0.5) * 0.012
-    p.vy = -vy * 0.1 + (Math.random() - 0.5) * 0.012
-    p.life = 1.0
-    p.maxLife = 0.4 + Math.random() * 0.35
-    p.scale = 0.3 + Math.random() * 0.5
-  }
 
   // Helper: compute repulsion from mouse ray to object
   function computeRepel(objX, objY, objZ, camera, pointer) {
@@ -164,8 +139,7 @@ function InteractiveField({ theme = 'dark' }) {
 
     const rs = rockets.current
     const ss = stars.current
-    const sks = smokes.current
-    if (!rs || !ss || !sks) return
+    if (!rs || !ss) return
 
     // ── ROCKETS ──
     if (rocketMesh.current) {
@@ -201,19 +175,6 @@ function InteractiveField({ theme = 'dark' }) {
           while (d > Math.PI) d -= Math.PI * 2
           while (d < -Math.PI) d += Math.PI * 2
           r.rot += d * 0.02
-        }
-
-        // Smoke
-        if (spd > 0.01) {
-          r.smokeCD--
-          if (r.smokeCD <= 0) {
-            const tx = r.px - Math.sin(r.rot) * r.scale * 0.06
-            const ty = r.py + Math.cos(r.rot) * r.scale * 0.06
-            emitSmoke(tx, ty, r.pz + 0.05, r.vx, r.vy)
-            r.smokeCD = 2
-          }
-        } else {
-          r.smokeCD = 0
         }
 
         dummy.position.set(r.px, r.py + bob, r.pz)
@@ -262,37 +223,10 @@ function InteractiveField({ theme = 'dark' }) {
       starMesh.current.instanceMatrix.needsUpdate = true
     }
 
-    // ── SMOKE ──
-    if (smokeMesh.current) {
-      for (let i = 0; i < SMOKE_N; i++) {
-        const p = sks[i]
-        if (p.life > 0) {
-          p.life -= delta / p.maxLife
-          p.x += p.vx
-          p.y += p.vy
-          p.vx *= 0.95
-          p.vy *= 0.95
-          const r = Math.max(0, p.life)
-          const vis = p.scale * Math.sin(r * Math.PI) * 1.3
-          dummy.position.set(p.x, p.y, p.z)
-          dummy.rotation.set(0, 0, 0)
-          dummy.scale.setScalar(Math.max(0.001, vis))
-        } else {
-          dummy.position.set(0, 0, -100)
-          dummy.scale.setScalar(0.001)
-        }
-        dummy.updateMatrix()
-        smokeMesh.current.setMatrixAt(i, dummy.matrix)
-      }
-      smokeMesh.current.instanceMatrix.needsUpdate = true
-    }
   })
 
   return (
     <>
-      <instancedMesh ref={smokeMesh} args={[smokeGeo, undefined, SMOKE_N]}>
-        <meshBasicMaterial color={smokeColor} transparent opacity={0.1} side={THREE.DoubleSide} depthWrite={false} />
-      </instancedMesh>
       <instancedMesh ref={rocketMesh} args={[rocketGeo, undefined, ROCKET_N]}>
         <meshBasicMaterial color={wireColor} transparent opacity={0.2} side={THREE.DoubleSide} depthWrite={false} />
       </instancedMesh>
