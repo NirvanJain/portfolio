@@ -10,19 +10,14 @@ const PROJECTS = [
     tech: ['React', 'Three.js', 'Framer Motion', 'Tailwind'], year: '2024', status: 'LIVE',
   },
   {
-    id: 2, title: 'PROJECT ALPHA', subtitle: 'Full-Stack Platform',
-    description: 'A comprehensive web platform built for scale. Handles thousands of users with clean architecture and beautiful interfaces.',
-    tech: ['Next.js', 'PostgreSQL', 'Tailwind', 'Prisma'], year: '2024', status: 'LIVE',
+    id: 2, title: 'LAZA_REV', subtitle: 'Interactive Frontend',
+    description: 'A responsive web experience built with HTML, CSS, and JavaScript. Designed for polished motion, media integration, and intuitive storytelling.',
+    tech: ['HTML', 'CSS', 'JavaScript', 'Vercel'], year: '2024', status: 'LIVE',
   },
   {
-    id: 3, title: 'VOID ENGINE', subtitle: 'Creative Toolkit',
-    description: 'A collection of creative coding tools and WebGL experiments. Shader playgrounds, particle systems, and generative art.',
-    tech: ['WebGL', 'GLSL', 'Canvas API', 'Web Audio'], year: '2023', status: 'BETA',
-  },
-  {
-    id: 4, title: 'NEURAL LINK', subtitle: 'AI Integration',
-    description: 'An AI-powered development assistant. Natural language code generation, intelligent debugging, and context-aware suggestions.',
-    tech: ['Python', 'TensorFlow', 'FastAPI', 'React'], year: '2023', status: 'ARCHIVE',
+    id: 3, title: 'BLOCKSMITH', subtitle: 'OpenHub Platform',
+    description: 'A full-stack platform with a React + Three.js frontend and Rust/Axum backend, powering chat, activity feeds, and real-time interactions.',
+    tech: ['React', 'Three.js', 'Rust', 'Axum'], year: '2024', status: 'BETA',
   },
 ]
 
