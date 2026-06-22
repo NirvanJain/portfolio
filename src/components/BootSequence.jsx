@@ -6,7 +6,7 @@ const BOOT_LINES = [
   { text: '> ESTABLISHING CONNECTION ████████████████ OK', delay: 400 },
   { text: '> SYSTEM READY', delay: 900 },
   { text: '', delay: 1200 },
-  { text: 'M I N D S P A C E', delay: 1400, style: 'title' },
+  { text: 'MINDSPACE', delay: 1400, style: 'title' },
   { text: '', delay: 1800 },
   { text: '[ CLICK OR PRESS ENTER ]', delay: 2000, style: 'prompt' },
 ]
