@@ -205,9 +205,14 @@ export default function App() {
 
       {/* Main experience */}
       {booted && (
-        <LayoutGroup id="social-dock">
-          {/* 3D Background — fixed behind everything */}
-          <Scene3D intensity={0.7} theme={theme} />
+        <motion.div
+          initial={{ opacity: 0, y: 28, scale: 0.98, filter: 'blur(16px)' }}
+          animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+          transition={{ delay: 0.16, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <LayoutGroup id="social-dock">
+            {/* 3D Background — fixed behind everything */}
+            <Scene3D intensity={0.7} theme={theme} />
 
           {/* CRT overlays */}
           <div className="scanline-overlay" />
@@ -261,6 +266,7 @@ export default function App() {
             }}
           />
         </LayoutGroup>
+      </motion.div>
       )}
     </div>
   )
