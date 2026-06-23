@@ -1,131 +1,151 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { Canvas, useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 
-const BOOT_LINES = [
-  { text: '> LOADING MINDSPACE...', delay: 0 },
-  { text: '> ESTABLISHING CONNECTION ████████████████ OK', delay: 400 },
-  { text: '> SYSTEM READY', delay: 900 },
-  { text: '', delay: 1200 },
-  { text: 'MINDSPACE', delay: 1400, style: 'title' },
-  { text: '', delay: 1800 },
-  { text: '[ CLICK OR PRESS ENTER ]', delay: 2000, style: 'prompt' },
-]
+// Minimalist 3D Dust/Particles
+function MinimalDust({ isExiting }) {
+  const count = 400
+  const mesh = useRef()
+  const materialRef = useRef()
 
-const bootVariants = {
-  hidden: {
-    opacity: 0,
-    scale: 1.08,
-    filter: 'blur(18px)',
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.8,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.98,
-    filter: 'blur(14px)',
-    transition: { duration: 0.55, ease: 'easeOut' },
-  },
+  const [positions, scales] = useMemo(() => {
+    const positions = new Float32Array(count * 3)
+    const scales = new Float32Array(count)
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 40
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 40
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 40
+      scales[i] = Math.random() * 1.5
+    }
+    return [positions, scales]
+  }, [])
+
+  useFrame((state, delta) => {
+    if (!mesh.current) return
+    mesh.current.rotation.y += delta * 0.05
+    mesh.current.rotation.x += delta * 0.02
+    
+    if (isExiting && materialRef.current) {
+      // Expand and dissolve elegantly
+      mesh.current.scale.lerp(new THREE.Vector3(3, 3, 3), 0.03)
+      materialRef.current.opacity = THREE.MathUtils.lerp(materialRef.current.opacity, 0, 0.05)
+    }
+  })
+
+  return (
+    <points ref={mesh}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={positions.length / 3}
+          array={positions}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-scale"
+          count={scales.length}
+          array={scales}
+          itemSize={1}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        ref={materialRef}
+        size={0.06}
+        color="#ffffff"
+        transparent
+        opacity={0.4}
+        sizeAttenuation
+        depthWrite={false}
+      />
+    </points>
+  )
 }
 
-const lineVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: (delay) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.35,
-      ease: [0.16, 1, 0.3, 1],
-      delay,
-    },
-  }),
+function CameraRig({ isExiting }) {
+  useFrame((state) => {
+    if (isExiting) {
+      // Gently drift forward into the void
+      state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, -10, 0.02)
+    } else {
+      // Very subtle sway
+      state.camera.position.x = THREE.MathUtils.lerp(state.camera.position.x, Math.sin(state.clock.elapsedTime * 0.2) * 0.5, 0.02)
+      state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, Math.cos(state.clock.elapsedTime * 0.15) * 0.5, 0.02)
+    }
+    state.camera.lookAt(0, 0, 0)
+  })
+  return null
 }
 
 export default function BootSequence({ onComplete }) {
-  const [lines, setLines] = useState([])
-  const [ready, setReady] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [exiting, setExiting] = useState(false)
 
   useEffect(() => {
-    const timers = BOOT_LINES.map((line) =>
-      setTimeout(() => {
-        setLines((prev) => [...prev, line])
-        if (line.style === 'prompt') setReady(true)
-      }, line.delay)
-    )
-    return () => timers.forEach(clearTimeout)
-  }, [])
+    let current = 0
+    let frameId
+    let lastTime = performance.now()
 
-  const handleEnter = useCallback(() => {
-    if (!ready || exiting) return
-    setExiting(true)
-    setTimeout(onComplete, 600)
-  }, [ready, exiting, onComplete])
+    const updateProgress = (time) => {
+      if (time - lastTime > 60) {
+        const increment = Math.floor(Math.random() * 3) + 1
+        current += increment
+        lastTime = time
 
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Enter') handleEnter()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [handleEnter])
-
-  // Auto-skip after 5 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!exiting) {
-        setExiting(true)
-        setTimeout(onComplete, 600)
+        if (current >= 100) {
+          current = 100
+          setProgress(100)
+          setTimeout(() => {
+            setExiting(true)
+            setTimeout(onComplete, 1600) // Longer, more elegant fade out
+          }, 400)
+          return
+        }
+        setProgress(current)
       }
-    }, 5000)
-    return () => clearTimeout(timer)
-  }, [exiting, onComplete])
-
-  const getLineClass = (style) => {
-    switch (style) {
-      case 'title':
-        return 'text-white text-2xl sm:text-4xl font-bold tracking-[0.35em] text-center font-display'
-      case 'prompt':
-        return 'text-white/50 text-[10px] sm:text-xs tracking-[0.3em] text-center mt-2 animate-pulse'
-      default:
-        return 'text-white/50 text-[10px] sm:text-xs text-center'
+      frameId = requestAnimationFrame(updateProgress)
     }
-  }
+
+    frameId = requestAnimationFrame(updateProgress)
+
+    return () => cancelAnimationFrame(frameId)
+  }, [onComplete])
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black flex items-center justify-center select-none overflow-hidden"
-      style={{ zIndex: 100 }}
-      variants={bootVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      onClick={handleEnter}
+      className="fixed inset-0 bg-[#020202] text-white overflow-hidden"
+      style={{ zIndex: 9999 }}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: exiting ? 0 : 1 }}
+      transition={{ duration: 1.5, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <div className="boot-vignette" />
-      <div className="boot-grid" />
-      <div className="scanline-overlay" />
-      <div className="w-full max-w-md px-6 font-mono leading-loose">
-        {lines.map((line, i) => (
-          <motion.div
-            key={i}
-            custom={i * 0.12}
-            variants={lineVariants}
-            initial="hidden"
-            animate="visible"
-            className={getLineClass(line.style)}
-          >
-            {line.text}
-          </motion.div>
-        ))}
+      <div className="absolute inset-0">
+        <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
+          <MinimalDust isExiting={exiting} />
+          <CameraRig isExiting={exiting} />
+        </Canvas>
       </div>
-      <div className="noise-bg" />
+
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none mix-blend-difference">
+        <div className="flex flex-col items-center">
+          <motion.div 
+            className="text-[18vw] md:text-[12vw] font-light tracking-tight leading-none flex items-end"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ 
+              opacity: exiting ? 0 : 1, 
+              y: exiting ? -40 : 0,
+              scale: exiting ? 1.05 : 1,
+              filter: exiting ? 'blur(8px)' : 'blur(0px)'
+            }}
+            transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {progress}
+            <span className="text-[4vw] md:text-[2vw] mb-[2vw] md:mb-[1vw] ml-1 text-white/30 font-light">%</span>
+          </motion.div>
+        </div>
+      </div>
     </motion.div>
   )
 }
+
