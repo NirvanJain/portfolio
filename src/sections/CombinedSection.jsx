@@ -22,8 +22,7 @@ export default function CombinedSection({ scrollContainer }) {
   return (
     <section id="hero" data-section ref={heroRef} className="relative h-screen flex flex-col md:flex-row items-center justify-center overflow-hidden">
       {/* Left – Hero Text */}
-      <motion.div
-        className="relative flex-1 flex flex-col items-start justify-center p-8 text-left"
+      <motion.div className="relative flex-1 flex flex-col items-center justify-center p-8 text-center"
         style={{
           zIndex: 10,
           scale,
