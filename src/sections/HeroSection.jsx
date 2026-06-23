@@ -113,6 +113,7 @@ export default function HeroSection({ scrollContainer }) {
       ref={ref}
       className="relative h-screen flex flex-row items-center justify-start pl-20 sm:pl-24 md:pl-28 pr-8 overflow-hidden"
     >
+
       {/* Left side - Text content */}
       <motion.div
         className="relative text-left max-w-2xl flex-1"

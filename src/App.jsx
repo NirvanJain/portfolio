@@ -12,8 +12,7 @@ import ScrollLine from './components/ScrollLine'
 
 
 // Sections
-import HeroSection from './sections/HeroSection'
-import AboutSection from './sections/AboutSection'
+import CombinedSection from './sections/CombinedSection'
 import ProjectsSection from './sections/ProjectsSection'
 import SkillsSection from './sections/SkillsSection'
 import ContactSection from './sections/ContactSection'
@@ -225,8 +224,7 @@ export default function App() {
             className="relative h-screen overflow-y-auto overflow-x-hidden scroll-smooth"
             style={{ zIndex: 10, scrollbarWidth: 'none' }}
           >
-            <HeroSection scrollContainer={mainRef} />
-            <AboutSection scrollContainer={mainRef} />
+            <CombinedSection scrollContainer={mainRef} />
             <ProjectsSection scrollContainer={mainRef} />
             <SkillsSection scrollContainer={mainRef} />
             <ContactSection scrollContainer={mainRef} />
