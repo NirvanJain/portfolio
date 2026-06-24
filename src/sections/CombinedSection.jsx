@@ -52,7 +52,7 @@ export default function CombinedSection({ scrollContainer }) {
       </motion.div>
 
       {/* Right – Intro Paragraphs */}
-      <div className="flex-1 flex flex-col items-start justify-start p-8 text-left">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
         <Reveal delay={0} direction="up">
           <p className="font-body text-sm sm:text-base text-white/50 leading-relaxed max-w-md text-center">
             Full-stack builder using Java, JavaScript, TypeScript, React, Next.js, Node.js, PostgreSQL, and Docker. I'm equally invested in system design, distributed systems, and understanding how software scales.

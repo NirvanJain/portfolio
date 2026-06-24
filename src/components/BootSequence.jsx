@@ -119,13 +119,6 @@ export default function BootSequence({ onComplete }) {
       animate={{ opacity: exiting ? 0 : 1 }}
       transition={{ duration: 1.5, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <div className="absolute inset-0">
-        <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
-          <MinimalDust isExiting={exiting} />
-          <CameraRig isExiting={exiting} />
-        </Canvas>
-      </div>
-
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none mix-blend-difference">
         <div className="flex flex-col items-center">
           <motion.div 
@@ -147,5 +140,4 @@ export default function BootSequence({ onComplete }) {
       </div>
     </motion.div>
   )
-}
 
