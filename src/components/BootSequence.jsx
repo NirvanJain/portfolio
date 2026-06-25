@@ -140,4 +140,5 @@ export default function BootSequence({ onComplete }) {
       </div>
     </motion.div>
   )
+}
 
