@@ -7,11 +7,53 @@
   --font-body: 'Hack', 'Space Mono', 'Courier New', monospace;
 }
 
+:root {
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-white-rgb: 255 255 255;
+  --color-black-rgb: 0 0 0;
+  color-scheme: dark;
+}
+
 /* ===== LIGHT THEME: Swap Tailwind's white/black vars ===== */
 :root[data-theme="light"] {
   --color-white: #000000;
   --color-black: #ffffff;
+  --color-white-rgb: 0 0 0;
+  --color-black-rgb: 255 255 255;
   color-scheme: light;
+}
+
+/* Override core utility classes with theme-aware CSS variables */
+.text-white {
+  color: var(--color-white) !important;
+}
+.text-black {
+  color: var(--color-black) !important;
+}
+.bg-black {
+  background-color: var(--color-black) !important;
+}
+.bg-white {
+  background-color: var(--color-white) !important;
+}
+.border-white {
+  border-color: var(--color-white) !important;
+}
+.border-black {
+  border-color: var(--color-black) !important;
+}
+
+[data-theme="light"] [class*="text-white/"] {
+  color: rgb(var(--color-black-rgb) / var(--tw-text-opacity, 1)) !important;
+}
+
+[data-theme="light"] [class*="bg-black/"] {
+  background-color: rgb(var(--color-white-rgb) / var(--tw-bg-opacity, 1)) !important;
+}
+
+[data-theme="light"] [class*="border-white/"] {
+  border-color: rgb(var(--color-black-rgb) / var(--tw-border-opacity, 1)) !important;
 }
 
 /* Smooth theme transition */

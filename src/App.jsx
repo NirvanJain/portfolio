@@ -175,7 +175,10 @@ export default function App() {
   }, [])
 
   return (
-    <div className="relative w-full h-full bg-black text-white">
+    <div
+      className="relative w-full h-full bg-black text-white"
+      style={{ backgroundColor: 'var(--color-black)', color: 'var(--color-white)' }}
+    >
       {/* Circle reveal transition overlay */}
       {circleTransition && (
         <div
