@@ -44,16 +44,32 @@
   border-color: var(--color-black) !important;
 }
 
+[data-theme="light"] [class*="text-white"] {
+  color: rgb(var(--color-black-rgb) / 0.95) !important;
+}
+
 [data-theme="light"] [class*="text-white/"] {
-  color: rgb(var(--color-black-rgb) / var(--tw-text-opacity, 1)) !important;
+  color: rgb(var(--color-black-rgb) / 0.9) !important;
+}
+
+[data-theme="light"] [class*="bg-black"] {
+  background-color: rgb(var(--color-black-rgb) / 0.06) !important;
 }
 
 [data-theme="light"] [class*="bg-black/"] {
-  background-color: rgb(var(--color-white-rgb) / var(--tw-bg-opacity, 1)) !important;
+  background-color: rgb(var(--color-black-rgb) / 0.08) !important;
+}
+
+[data-theme="light"] [class*="border-white"] {
+  border-color: rgb(var(--color-black-rgb) / 0.24) !important;
 }
 
 [data-theme="light"] [class*="border-white/"] {
-  border-color: rgb(var(--color-black-rgb) / var(--tw-border-opacity, 1)) !important;
+  border-color: rgb(var(--color-black-rgb) / 0.3) !important;
+}
+
+[data-theme="light"] [class*="bg-white"] {
+  background-color: rgb(var(--color-white-rgb) / 0.98) !important;
 }
 
 /* Smooth theme transition */

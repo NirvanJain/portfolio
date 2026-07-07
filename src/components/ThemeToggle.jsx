@@ -19,7 +19,7 @@ export default function ThemeToggle({ theme, onToggle }) {
   return (
     <motion.button
       ref={btnRef}
-      className="fixed top-6 right-16 sm:top-8 sm:right-20 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-white/20 hover:border-white/50 rounded-full transition-colors duration-300 select-none"
+      className="fixed top-6 right-16 sm:top-8 sm:right-20 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-black/15 dark:border-white/20 hover:border-black/35 dark:hover:border-white/50 rounded-full transition-colors duration-300 select-none bg-white/80 dark:bg-transparent backdrop-blur-sm"
       style={{ zIndex: 9999 }}
       onClick={handleClick}
       initial={{ opacity: 0, scale: 0.8 }}
@@ -30,6 +30,7 @@ export default function ThemeToggle({ theme, onToggle }) {
       whileTap={{ scale: 0.9 }}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} theme`}
     >
+      <span className="text-black/80 dark:text-white/90">
       <AnimatePresence mode="wait">
         {isDark ? (
           <motion.svg
@@ -68,6 +69,7 @@ export default function ThemeToggle({ theme, onToggle }) {
           </motion.svg>
         )}
       </AnimatePresence>
+      </span>
     </motion.button>
   )
 }

@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
+import { LayoutGroup, motion } from 'framer-motion'
 
 // Components
 import CustomCursor from './components/CustomCursor'
-import BootSequence from './components/BootSequence'
 import Scene3D from './components/Scene3D'
 import Terminal from './components/Terminal'
 import ThemeToggle from './components/ThemeToggle'
@@ -89,7 +88,6 @@ function FloatingNav({ activeSection, theme }) {
 }
 
 export default function App() {
-  const [booted, setBooted] = useState(false)
   const [terminalOpen, setTerminalOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
   const [theme, setTheme] = useState(() => {
@@ -135,8 +133,6 @@ export default function App() {
 
   // ===== INTERSECTION OBSERVER FOR ACTIVE SECTION =====
   useEffect(() => {
-    if (!booted) return
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -152,7 +148,7 @@ export default function App() {
     sections.forEach((s) => observer.observe(s))
 
     return () => observer.disconnect()
-  }, [booted])
+  }, [])
 
   // ===== KEYBOARD SHORTCUTS =====
   useEffect(() => {
@@ -169,10 +165,6 @@ export default function App() {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [terminalOpen])
-
-  const handleBootComplete = useCallback(() => {
-    setBooted(true)
-  }, [])
 
   return (
     <div
@@ -198,20 +190,12 @@ export default function App() {
       {/* Custom cursor */}
       <CustomCursor />
 
-      {/* Boot sequence */}
-      <AnimatePresence>
-        {!booted && (
-          <BootSequence key="boot" onComplete={handleBootComplete} />
-        )}
-      </AnimatePresence>
-
       {/* Main experience */}
-      {booted && (
-        <motion.div
-          initial={{ opacity: 0, y: 28, scale: 0.98, filter: 'blur(16px)' }}
-          animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-          transition={{ delay: 0.16, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        >
+      <motion.div
+        initial={{ opacity: 0, y: 28, scale: 0.98, filter: 'blur(16px)' }}
+        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+        transition={{ delay: 0.16, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      >
           <LayoutGroup id="social-dock">
             {/* 3D Background — fixed behind everything */}
             <Scene3D intensity={0.7} theme={theme} />
@@ -268,7 +252,6 @@ export default function App() {
           />
         </LayoutGroup>
       </motion.div>
-      )}
     </div>
   )
 }
