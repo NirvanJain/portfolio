@@ -153,7 +153,13 @@ export default function Footer({ scrollContainer }) {
   }, [isDark])
 
   return (
-    <footer className="relative w-full h-[400px] border-t border-white/5 bg-black overflow-hidden">
+    <footer
+      className="relative w-full h-[400px] overflow-hidden"
+      style={{
+        borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.08)',
+        background: isDark ? '#000000' : '#f8f8f8',
+      }}
+    >
       <canvas 
         ref={canvasRef} 
         className="absolute inset-0 pointer-events-none"
@@ -165,18 +171,31 @@ export default function Footer({ scrollContainer }) {
           <motion.p 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="font-mono text-[10px] tracking-[0.6em] text-white/20 uppercase mb-6"
+            className="font-mono text-[10px] tracking-[0.6em] uppercase mb-6"
+            style={{ color: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.20)' }}
           >
             V O I D // S Y S T E M S
           </motion.p>
           <div className="flex gap-16">
             <div className="flex flex-col items-center gap-1.5">
-              <span className="font-mono text-[8px] text-white/5 uppercase tracking-[0.3em]">Foundation</span>
-              <span className="font-mono text-[10px] text-white/30 tracking-widest">MINDSPACE V1</span>
+              <span
+                className="font-mono text-[8px] uppercase tracking-[0.3em]"
+                style={{ color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)' }}
+              >Foundation</span>
+              <span
+                className="font-mono text-[10px] tracking-widest"
+                style={{ color: isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)' }}
+              >MINDSPACE V1</span>
             </div>
             <div className="flex flex-col items-center gap-1.5">
-              <span className="font-mono text-[8px] text-white/5 uppercase tracking-[0.3em]">Protocol</span>
-              <span className="font-mono text-[10px] text-white/30 tracking-widest">NJ // © {new Date().getFullYear()}</span>
+              <span
+                className="font-mono text-[8px] uppercase tracking-[0.3em]"
+                style={{ color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)' }}
+              >Protocol</span>
+              <span
+                className="font-mono text-[10px] tracking-widest"
+                style={{ color: isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)' }}
+              >NJ // © {new Date().getFullYear()}</span>
             </div>
           </div>
         </div>
@@ -185,7 +204,12 @@ export default function Footer({ scrollContainer }) {
       {/* Floating Back to Top */}
       <motion.button
         onClick={() => scrollContainer.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="absolute bottom-16 right-16 z-20 w-14 h-14 rounded-full border border-white/5 bg-white/[0.03] flex items-center justify-center text-white/20 hover:text-white hover:border-white/20 transition-all duration-700 backdrop-blur-sm group"
+        className="absolute bottom-16 right-16 z-20 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-700 backdrop-blur-sm group"
+        style={{
+          border: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.10)',
+          background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+          color: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.25)',
+        }}
         whileHover={{ y: -8, scale: 1.05 }}
         data-hoverable
       >

@@ -230,8 +230,8 @@ export default function App() {
 
           {/* Terminal shortcut hint */}
           <motion.div
-            className="fixed bottom-5 left-6 font-mono text-[9px] text-white/15 tracking-[0.3em] hidden sm:block"
-            style={{ zIndex: 60 }}
+            className="fixed bottom-5 left-6 font-mono text-[9px] tracking-[0.3em] hidden sm:block"
+            style={{ zIndex: 60, color: `rgba(${theme === 'dark' ? '255,255,255' : '0,0,0'}, 0.15)` }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2 }}

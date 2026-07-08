@@ -25,52 +25,64 @@
 }
 
 /* Override core utility classes with theme-aware CSS variables */
-.text-white {
-  color: var(--color-white) !important;
-}
-.text-black {
-  color: var(--color-black) !important;
-}
-.bg-black {
-  background-color: var(--color-black) !important;
-}
-.bg-white {
-  background-color: var(--color-white) !important;
-}
-.border-white {
-  border-color: var(--color-white) !important;
-}
-.border-black {
-  border-color: var(--color-black) !important;
-}
+.text-white { color: var(--color-white) !important; }
+.text-black { color: var(--color-black) !important; }
+.bg-black { background-color: var(--color-black) !important; }
+.bg-white { background-color: var(--color-white) !important; }
+.border-white { border-color: var(--color-white) !important; }
+.border-black { border-color: var(--color-black) !important; }
 
-[data-theme="light"] [class*="text-white"] {
-  color: rgb(var(--color-black-rgb) / 0.95) !important;
-}
+/*
+ * Tailwind v4 bakes opacity variants (text-white/30) as literal color-mix() values,
+ * so CSS variable swaps alone won't work. We explicitly override each opacity step.
+ */
 
-[data-theme="light"] [class*="text-white/"] {
-  color: rgb(var(--color-black-rgb) / 0.9) !important;
-}
+/* text-white/{n} → dark text in light mode */
+[data-theme="light"] .text-white\/5  { color: rgba(0,0,0,0.05)  !important; }
+[data-theme="light"] .text-white\/8  { color: rgba(0,0,0,0.08)  !important; }
+[data-theme="light"] .text-white\/10 { color: rgba(0,0,0,0.10) !important; }
+[data-theme="light"] .text-white\/15 { color: rgba(0,0,0,0.15) !important; }
+[data-theme="light"] .text-white\/20 { color: rgba(0,0,0,0.20) !important; }
+[data-theme="light"] .text-white\/25 { color: rgba(0,0,0,0.25) !important; }
+[data-theme="light"] .text-white\/30 { color: rgba(0,0,0,0.30) !important; }
+[data-theme="light"] .text-white\/35 { color: rgba(0,0,0,0.35) !important; }
+[data-theme="light"] .text-white\/40 { color: rgba(0,0,0,0.40) !important; }
+[data-theme="light"] .text-white\/45 { color: rgba(0,0,0,0.45) !important; }
+[data-theme="light"] .text-white\/50 { color: rgba(0,0,0,0.50) !important; }
+[data-theme="light"] .text-white\/60 { color: rgba(0,0,0,0.60) !important; }
+[data-theme="light"] .text-white\/70 { color: rgba(0,0,0,0.70) !important; }
+[data-theme="light"] .text-white\/80 { color: rgba(0,0,0,0.80) !important; }
+[data-theme="light"] .text-white\/90 { color: rgba(0,0,0,0.90) !important; }
+/* Also handle unescaped class names from Framer / inline */
+[data-theme="light"] [class*="text-white/"] { color: rgba(0,0,0,0.6) !important; }
 
-[data-theme="light"] [class*="bg-black"] {
-  background-color: rgb(var(--color-black-rgb) / 0.06) !important;
-}
+/* bg-white/{n} → keep white bg as near-white in light mode */
+[data-theme="light"] .bg-white\/5   { background-color: rgba(255,255,255,0.5) !important; }
+[data-theme="light"] .bg-white\/8   { background-color: rgba(255,255,255,0.6) !important; }
+[data-theme="light"] .bg-white\/10  { background-color: rgba(255,255,255,0.7) !important; }
+[data-theme="light"] .bg-white\/20  { background-color: rgba(255,255,255,0.8) !important; }
+[data-theme="light"] .bg-white\/80  { background-color: rgba(0,0,0,0.06)     !important; }
+[data-theme="light"] [class*="bg-white/"] { background-color: rgba(255,255,255,0.5) !important; }
 
-[data-theme="light"] [class*="bg-black/"] {
-  background-color: rgb(var(--color-black-rgb) / 0.08) !important;
-}
+/* bg-black/{n} → light surface in light mode */
+[data-theme="light"] .bg-black\/20  { background-color: rgba(0,0,0,0.04) !important; }
+[data-theme="light"] .bg-black\/85  { background-color: rgba(255,255,255,0.95) !important; }
+[data-theme="light"] [class*="bg-black/"] { background-color: rgba(0,0,0,0.04) !important; }
 
-[data-theme="light"] [class*="border-white"] {
-  border-color: rgb(var(--color-black-rgb) / 0.24) !important;
-}
+/* border-white/{n} */
+[data-theme="light"] .border-white\/5  { border-color: rgba(0,0,0,0.07)  !important; }
+[data-theme="light"] .border-white\/8  { border-color: rgba(0,0,0,0.09)  !important; }
+[data-theme="light"] .border-white\/10 { border-color: rgba(0,0,0,0.12) !important; }
+[data-theme="light"] .border-white\/15 { border-color: rgba(0,0,0,0.15) !important; }
+[data-theme="light"] .border-white\/20 { border-color: rgba(0,0,0,0.18) !important; }
+[data-theme="light"] .border-white\/30 { border-color: rgba(0,0,0,0.25) !important; }
+[data-theme="light"] [class*="border-white/"] { border-color: rgba(0,0,0,0.12) !important; }
 
-[data-theme="light"] [class*="border-white/"] {
-  border-color: rgb(var(--color-black-rgb) / 0.3) !important;
-}
-
-[data-theme="light"] [class*="bg-white"] {
-  background-color: rgb(var(--color-white-rgb) / 0.98) !important;
-}
+/* hover variants */
+[data-theme="light"] .hover\:text-white:hover        { color: rgba(0,0,0,0.95) !important; }
+[data-theme="light"] .hover\:text-white\/60:hover    { color: rgba(0,0,0,0.60) !important; }
+[data-theme="light"] .hover\:border-white\/20:hover  { border-color: rgba(0,0,0,0.20) !important; }
+[data-theme="light"] .hover\:border-white\/50:hover  { border-color: rgba(0,0,0,0.50) !important; }
 
 /* Smooth theme transition */
 *, *::before, *::after {
@@ -188,29 +200,13 @@ html, body, #root {
 }
 
 @keyframes zone-enter {
-  from {
-    opacity: 0;
-    transform: scale(0.94) translateY(30px);
-    filter: blur(12px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    filter: blur(0px);
-  }
+  from { opacity: 0; transform: scale(0.94) translateY(30px); filter: blur(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
 }
 
 @keyframes zone-exit {
-  from {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-  to {
-    opacity: 0;
-    transform: scale(1.06);
-    filter: blur(12px);
-  }
+  from { opacity: 1; transform: scale(1); filter: blur(0); }
+  to { opacity: 0; transform: scale(1.06); filter: blur(12px); }
 }
 
 @keyframes reveal-line {
@@ -223,34 +219,25 @@ html, body, #root {
   100% { background-position: 200% 0; }
 }
 
-@keyframes character-wave {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-15deg); }
-  75% { transform: rotate(15deg); }
-}
-
-@keyframes circleReveal {
-  0% {
-    clip-path: circle(0px at var(--reveal-x) var(--reveal-y));
-  }
-  100% {
-    clip-path: circle(var(--reveal-radius) at var(--reveal-x) var(--reveal-y));
-  }
-}
-
 @keyframes boot-pulse {
   0%, 100% { opacity: 0.88; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.02); }
+  50% { opacity: 1; transform: scale(1.01); }
 }
 
 .boot-vignette {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.08), transparent 30%),
-    radial-gradient(circle at 20% 30%, rgba(123, 103, 255, 0.12), transparent 17%),
-    radial-gradient(circle at 85% 60%, rgba(90, 190, 255, 0.08), transparent 16%);
-  opacity: 0.85;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.08), transparent 18%),
+    radial-gradient(circle at 25% 40%, rgba(140, 120, 255, 0.11), transparent 18%),
+    radial-gradient(circle at 75% 70%, rgba(80, 220, 255, 0.08), transparent 16%);
+  opacity: 0.9;
+}
+
+[data-theme="light"] .boot-vignette {
+  background: radial-gradient(circle at 50% 30%, rgba(0, 0, 0, 0.04), transparent 18%),
+    radial-gradient(circle at 25% 40%, rgba(60, 40, 150, 0.05), transparent 18%),
+    radial-gradient(circle at 75% 70%, rgba(40, 100, 150, 0.04), transparent 16%);
 }
 
 .boot-grid {
@@ -260,8 +247,14 @@ html, body, #root {
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 80px 80px;
+  background-size: 74px 74px;
   opacity: 0.12;
+}
+
+[data-theme="light"] .boot-grid {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
 }
 
 .scanline-overlay {
@@ -276,115 +269,14 @@ html, body, #root {
     transparent 1px,
     transparent 3px
   );
-  animation: boot-pulse 6s ease-in-out infinite alternate;
+  animation: boot-pulse 5.8s ease-in-out infinite alternate;
 }
 
-/* ===== red SPOTLIGHT — FOLLOWS MOUSE ===== */
-
-/* Wrapper for the name heading */
-.name-hover {
-  position: relative;
-  display: inline-block;
-}
-
-/* Radial gradient spotlight that follows mouse via --mx, --my */
-.name-hover::before {
-  content: '';
-  position: absolute;
-  inset: -40px -60px;
-  border-radius: 16px;
-  background: radial-gradient(
-    circle 180px at var(--mx, 50%) var(--my, 50%),
-    rgba(175, 150, 240, 0.40) 0%,
-    rgba(160, 130, 220, 0.25) 25%,
-    rgba(160, 140, 220, 0.12) 50%,
-    rgba(200, 180, 255, 0.04) 75%,
-    transparent 100%
-  );
-  filter: blur(18px);
-  opacity: 0;
-  z-index: -1;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-}
-
-.name-hover.active::before {
-  opacity: 1;
-}
-
-/* Subtle text shadow by default */
-.name-hover > * {
-  text-shadow: 5px 2px 14px rgba(255, 255, 255, 0.06), 10px 3px 30px rgba(255, 255, 255, 0.03);
-  transition: text-shadow 0.4s ease;
-}
-
-.name-hover.active > * {
-  text-shadow: 0 0 16px rgba(180, 155, 240, 0.12), 0 0 40px rgba(160, 130, 220, 0.06);
-}
-
-/* Light theme */
-[data-theme="light"] .name-hover::before {
-  background: radial-gradient(
-    circle 180px at var(--mx, 50%) var(--my, 50%),
-    rgba(60, 40, 80, 0.25) 0%,
-    rgba(50, 35, 70, 0.15) 25%,
-    rgba(40, 28, 60, 0.08) 50%,
-    rgba(30, 20, 50, 0.03) 75%,
-    transparent 100%
-  );
-}
-
-[data-theme="light"] .name-hover > * {
-  text-shadow: 5px 2px 14px rgba(0, 0, 0, 0.04), 10px 3px 30px rgba(0, 0, 0, 0.02);
-}
-
-[data-theme="light"] .name-hover.active > * {
-  text-shadow: 0 0 16px rgba(60, 40, 80, 0.15), 0 0 40px rgba(50, 35, 70, 0.08);
-}
-
-@keyframes typing-dots {
-  0%, 20% { content: '.'; }
-  40% { content: '..'; }
-  60%, 100% { content: '...'; }
-}
-
-/* ===== UTILITY CLASSES ===== */
-
-.text-glitch {
-  position: relative;
-}
-
-.text-glitch::before,
-.text-glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.text-glitch::before {
-  animation: glitch-clip-1 4s infinite linear alternate-reverse;
-  text-shadow: -2px 0 var(--color-white, #ffffff);
-}
-
-.text-glitch::after {
-  animation: glitch-clip-2 4s infinite linear alternate-reverse;
-  text-shadow: 2px 0 var(--color-white, #ffffff);
-}
-
-/* CRT Scanline Overlay */
-.scanline-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
+[data-theme="light"] .scanline-overlay {
   background: repeating-linear-gradient(
     0deg,
-    rgba(255, 255, 255, 0.012) 0px,
-    rgba(255, 255, 255, 0.012) 1px,
+    rgba(0, 0, 0, 0.04) 0px,
+    rgba(0, 0, 0, 0.04) 1px,
     transparent 1px,
     transparent 3px
   );
@@ -405,7 +297,41 @@ html, body, #root {
   animation: scanline-sweep 7s linear infinite;
 }
 
-/* Noise Background */
+[data-theme="light"] .scanline-overlay::after {
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.06), transparent);
+}
+
+/* ===== red SPOTLIGHT — FOLLOWS MOUSE ===== */
+
+.name-hover { position: relative; display: inline-block; }
+
+.name-hover::before {
+  content: '';
+  position: absolute;
+  inset: -40px -60px;
+  border-radius: 16px;
+  background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 50%), rgba(175, 150, 240, 0.40) 0%, rgba(160, 130, 220, 0.25) 25%, rgba(160, 140, 220, 0.12) 50%, rgba(200, 180, 255, 0.04) 75%, transparent 100%);
+  filter: blur(18px); opacity: 0; z-index: -1; transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none;
+}
+
+.name-hover.active::before { opacity: 1; }
+
+.name-hover > * { text-shadow: 5px 2px 14px rgba(255, 255, 255, 0.06), 10px 3px 30px rgba(255, 255, 255, 0.03); transition: text-shadow 0.4s ease; }
+.name-hover.active > * { text-shadow: 0 0 16px rgba(180, 155, 240, 0.12), 0 0 40px rgba(160, 130, 220, 0.06); }
+
+[data-theme="light"] .name-hover::before {
+  background: radial-gradient(circle 180px at var(--mx, 50%) var(--my, 50%), rgba(60, 40, 80, 0.15) 0%, rgba(50, 35, 70, 0.08) 25%, rgba(40, 28, 60, 0.04) 50%, rgba(30, 20, 50, 0.01) 75%, transparent 100%);
+}
+[data-theme="light"] .name-hover > * { text-shadow: 5px 2px 14px rgba(0, 0, 0, 0.04), 10px 3px 30px rgba(0, 0, 0, 0.02); }
+[data-theme="light"] .name-hover.active > * { text-shadow: 0 0 16px rgba(60, 40, 80, 0.1), 0 0 40px rgba(50, 35, 70, 0.05); }
+
+/* ===== UTILITY CLASSES ===== */
+
+.text-glitch { position: relative; }
+.text-glitch::before, .text-glitch::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.text-glitch::before { animation: glitch-clip-1 4s infinite linear alternate-reverse; text-shadow: -2px 0 var(--color-white, #ffffff); }
+.text-glitch::after { animation: glitch-clip-2 4s infinite linear alternate-reverse; text-shadow: 2px 0 var(--color-white, #ffffff); }
+
 .noise-bg {
   position: fixed;
   inset: 0;
@@ -417,211 +343,43 @@ html, body, #root {
   animation: noise-shift 0.5s steps(3) infinite;
 }
 
-.boot-vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.08), transparent 18%),
-    radial-gradient(circle at 25% 40%, rgba(140, 120, 255, 0.11), transparent 18%),
-    radial-gradient(circle at 75% 70%, rgba(80, 220, 255, 0.08), transparent 16%);
-  opacity: 0.9;
-}
-
-.boot-grid {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 74px 74px;
-  opacity: 0.12;
-}
-
-.scanline-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.012) 0px,
-    rgba(255, 255, 255, 0.012) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  animation: boot-pulse 5.8s ease-in-out infinite alternate;
-}
-
-@keyframes boot-pulse {
-  0%, 100% { opacity: 0.88; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.01); }
-}
+[data-theme="light"] .noise-bg { filter: invert(1); opacity: 0.06; }
 
 /* Zone transitions */
-.zone-enter {
-  animation: zone-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+.zone-enter { animation: zone-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.zone-exit { animation: zone-exit 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards; }
 
-.zone-exit {
-  animation: zone-exit 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-}
-
-/* Floating animations */
 .float { animation: float 6s ease-in-out infinite; }
 .float-slow { animation: float-slow 8s ease-in-out infinite; }
 .float-gentle { animation: float-gentle 5s ease-in-out infinite; }
-
-/* Breathe animation */
 .breathe { animation: breathe 4s ease-in-out infinite; }
 
-/* Shimmer text */
 .shimmer-text {
-  background: linear-gradient(
-    90deg,
-    #ffffff 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    #ffffff 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 3s linear infinite;
+  background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.4) 50%, #ffffff 100%);
+  background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite;
 }
+[data-theme="light"] .shimmer-text { background: linear-gradient(90deg, #000000 0%, rgba(0, 0, 0, 0.4) 50%, #000000 100%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; }
 
-/* Reveal line */
-.reveal-line {
-  overflow: hidden;
-  white-space: nowrap;
-}
+.reveal-line { overflow: hidden; white-space: nowrap; }
+.reveal-line::after { content: ''; display: inline-block; width: 2px; height: 1em; background: var(--color-white, #ffffff); margin-left: 4px; animation: cursor-blink 1s step-end infinite; }
 
-.reveal-line::after {
-  content: '';
-  display: inline-block;
-  width: 2px;
-  height: 1em;
-  background: var(--color-white, #ffffff);
-  margin-left: 4px;
-  animation: cursor-blink 1s step-end infinite;
-}
-
-/* Interactive elements */
-.interactive-glow {
-  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.interactive-glow:hover {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.2);
-}
-
-/* ===== LIGHT THEME OVERLAY OVERRIDES ===== */
-[data-theme="light"] .scanline-overlay {
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.012) 0px,
-    rgba(0, 0, 0, 0.012) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-}
-
-[data-theme="light"] .scanline-overlay::after {
-  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.02), transparent);
-}
-
-[data-theme="light"] .noise-bg {
-  filter: invert(1);
-}
-
-[data-theme="light"] .vignette {
-  background: radial-gradient(
-    ellipse at center,
-    transparent 50%,
-    rgba(0, 0, 0, 0.06) 100%
-  );
-}
-
-[data-theme="light"] .shimmer-text {
-  background: linear-gradient(
-    90deg,
-    var(--color-white) 0%,
-    rgba(10, 10, 10, 0.4) 50%,
-    var(--color-white) 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-[data-theme="light"] .interactive-glow:hover {
-  text-shadow: 0 0 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1);
-}
+.interactive-glow { transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
+.interactive-glow:hover { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.2); }
+[data-theme="light"] .interactive-glow:hover { text-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 40px rgba(0, 0, 0, 0.1); }
 
 /* ===== PHOTO FRAME ===== */
+.photo-frame { position: relative; display: inline-block; }
+.photo-frame > div > .absolute:first-child { transition: filter 0.4s ease; }
+.photo-frame.active > div > .absolute:first-child { filter: brightness(1.15); }
 
-.photo-frame {
-  position: relative;
-  display: inline-block;
-}
-
-.photo-frame > div > .absolute:first-child {
-  transition: filter 0.4s ease;
-}
-
-.photo-frame.active > div > .absolute:first-child {
-  filter: brightness(1.15);
-}
-
-/* Vignette effect */
 .vignette {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9996;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 50%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
 }
+[data-theme="light"] .vignette { background: radial-gradient(ellipse at center, transparent 50%, rgba(255, 255, 255, 0.3) 100%); }
 
-/* Distortion on hover */
-.distort-hover {
-  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.distort-hover:hover {
-  transform: skewX(-2deg) scale(1.02);
-}
-
-/* ===== PHOTO FRAME GLITCH ANIMATIONS ===== */
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes glitchScan {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(3px); }
-}
-
-@keyframes glitchHorizontal {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(2px); }
-}
-
-@keyframes glitchSparks {
-  0%, 89% { opacity: 0; }
-  90%, 92% { opacity: 0.7; }
-  93%, 95% { opacity: 0; }
-  96%, 98% { opacity: 0.5; }
-  100% { opacity: 0; }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.3; transform: scaleY(0.8); }
-  100% { opacity: 1; transform: scaleY(1.2); }
-}
+.distort-hover { transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
+.distort-hover:hover { transform: skewX(-2deg) scale(1.02); }

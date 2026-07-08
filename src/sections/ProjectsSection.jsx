@@ -8,16 +8,22 @@ const PROJECTS = [
     id: 1, title: 'MINDSPACE', subtitle: 'Interactive Portfolio',
     description: "The experience you're in right now. An experimental, game-like portfolio that pushes what a website can feel like.",
     tech: ['React', 'Three.js', 'Framer Motion', 'Tailwind'], year: '2024', status: 'LIVE',
+    liveUrl: '#',
+    repoUrl: 'https://github.com/NirvanJain/portfolio',
   },
   {
     id: 2, title: 'LAZA_REV', subtitle: 'Interactive Frontend',
     description: 'A responsive web experience built with HTML, CSS, and JavaScript. Designed for polished motion, media integration, and intuitive storytelling.',
     tech: ['HTML', 'CSS', 'JavaScript', 'Vercel'], year: '2024', status: 'LIVE',
+    liveUrl: 'https://laza-rev.vercel.app',
+    repoUrl: 'https://github.com/NirvanJain/Laza_Rev',
   },
   {
     id: 3, title: 'BLOCKSMITH', subtitle: 'OpenHub Platform',
     description: 'A full-stack platform with a React + Three.js frontend and Rust/Axum backend, powering chat, activity feeds, and real-time interactions.',
     tech: ['React', 'Three.js', 'Rust', 'Axum'], year: '2024', status: 'BETA',
+    liveUrl: null,
+    repoUrl: 'https://github.com/NirvanJain/blocksmith',
   },
 ]
 
@@ -110,6 +116,45 @@ function ProjectCard({ project, index }) {
           {project.tech.map((t) => (
             <span key={t} className="font-mono text-[9px] tracking-wider px-2.5 py-1 border border-white/8 text-white/35 hover:text-white/60 hover:border-white/20 transition-all duration-300">{t}</span>
           ))}
+        </div>
+
+        {/* Text links: Live Demo + View Project */}
+        <div className="mt-5 flex items-center gap-5" style={{ transform: 'translateZ(20px)' }}>
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/link font-mono text-[9px] tracking-[0.18em] text-white/30 hover:text-white/80 transition-colors duration-300 flex items-center gap-1.5"
+              data-hoverable
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="relative">
+                LIVE DEMO
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-white/60 group-hover/link:w-full transition-all duration-300" />
+              </span>
+              <span className="opacity-0 group-hover/link:opacity-100 transition-opacity duration-300">↗</span>
+            </a>
+          )}
+          {project.liveUrl && project.repoUrl && (
+            <span className="text-white/10 font-mono text-[8px]">·</span>
+          )}
+          {project.repoUrl && (
+            <a
+              href={project.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/repo font-mono text-[9px] tracking-[0.18em] text-white/30 hover:text-white/80 transition-colors duration-300 flex items-center gap-1.5"
+              data-hoverable
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="relative">
+                VIEW PROJECT
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-white/60 group-hover/repo:w-full transition-all duration-300" />
+              </span>
+              <span className="opacity-0 group-hover/repo:opacity-100 transition-opacity duration-300">→</span>
+            </a>
+          )}
         </div>
       </div>
       

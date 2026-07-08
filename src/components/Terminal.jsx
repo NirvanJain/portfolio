@@ -193,8 +193,19 @@ export default function Terminal({ isOpen, onClose, onNavigate }) {
   const [input, setInput] = useState('')
   const [cmdHistory, setCmdHistory] = useState([])
   const [historyIdx, setHistoryIdx] = useState(-1)
+  const [isDark, setIsDark] = useState(true)
   const inputRef = useRef(null)
   const scrollRef = useRef(null)
+
+  useEffect(() => {
+    const check = () => {
+      setIsDark(document.documentElement.getAttribute('data-theme') !== 'light')
+    }
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
 
   // Auto-focus input when terminal opens
   useEffect(() => {
@@ -333,31 +344,43 @@ export default function Terminal({ isOpen, onClose, onNavigate }) {
         >
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/85 backdrop-blur-sm"
+            className="absolute inset-0 backdrop-blur-sm"
+            style={{ background: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.85)' }}
             onClick={onClose}
           />
 
           {/* Terminal window */}
           <motion.div
-            className="relative w-full max-w-3xl h-[75vh] bg-black border border-white/15 overflow-hidden flex flex-col"
+            className="relative w-full max-w-3xl h-[75vh] overflow-hidden flex flex-col"
+            style={{
+              background: isDark ? '#080808' : '#fafafa',
+              border: isDark ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(0,0,0,0.12)',
+            }}
             initial={{ scale: 0.92, y: 25, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.96, y: 15, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 350, damping: 28 }}
           >
             {/* Title bar */}
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10 shrink-0">
+            <div
+              className="flex items-center justify-between px-4 py-2.5 shrink-0"
+              style={{ borderBottom: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(0,0,0,0.08)' }}
+            >
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full border border-white/30" />
-                <div className="w-2.5 h-2.5 rounded-full border border-white/30" />
-                <div className="w-2.5 h-2.5 rounded-full border border-white/30" />
+                <div className="w-2.5 h-2.5 rounded-full" style={{ border: isDark ? '1px solid rgba(255,255,255,0.30)' : '1px solid rgba(0,0,0,0.20)' }} />
+                <div className="w-2.5 h-2.5 rounded-full" style={{ border: isDark ? '1px solid rgba(255,255,255,0.30)' : '1px solid rgba(0,0,0,0.20)' }} />
+                <div className="w-2.5 h-2.5 rounded-full" style={{ border: isDark ? '1px solid rgba(255,255,255,0.30)' : '1px solid rgba(0,0,0,0.20)' }} />
               </div>
-              <span className="font-mono text-[9px] sm:text-[10px] text-white/30 tracking-[0.3em]">
+              <span
+                className="font-mono text-[9px] sm:text-[10px] tracking-[0.3em]"
+                style={{ color: isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)' }}
+              >
                 MINDSPACE://TERMINAL
               </span>
               <button
                 onClick={onClose}
-                className="text-white/30 hover:text-white text-[10px] sm:text-xs font-mono transition-colors"
+                className="font-mono text-[10px] sm:text-xs transition-colors"
+                style={{ color: isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)' }}
                 data-hoverable
               >
                 [ESC]
@@ -373,14 +396,14 @@ export default function Terminal({ isOpen, onClose, onNavigate }) {
             >
               {history.map((entry, i) =>
                 entry.type === 'input' ? (
-                  <div key={i} className="text-white/80">
-                    <span className="text-white/40">visitor@mindspace:~$ </span>
+                  <div key={i} style={{ color: isDark ? 'rgba(255,255,255,0.80)' : 'rgba(0,0,0,0.80)' }}>
+                    <span style={{ color: isDark ? 'rgba(255,255,255,0.40)' : 'rgba(0,0,0,0.40)' }}>visitor@mindspace:~$ </span>
                     {entry.text}
                   </div>
                 ) : (
                   <div key={i}>
                     {entry.lines.map((line, j) => (
-                      <div key={j} className="text-white/60 whitespace-pre font-mono">
+                      <div key={j} className="whitespace-pre font-mono" style={{ color: isDark ? 'rgba(255,255,255,0.60)' : 'rgba(0,0,0,0.60)' }}>
                         {line}
                       </div>
                     ))}
@@ -390,7 +413,7 @@ export default function Terminal({ isOpen, onClose, onNavigate }) {
 
               {/* Input line */}
               <div className="flex items-center mt-0.5">
-                <span className="text-white/40 shrink-0 select-none">
+                <span className="shrink-0 select-none" style={{ color: isDark ? 'rgba(255,255,255,0.40)' : 'rgba(0,0,0,0.40)' }}>
                   visitor@mindspace:~${' '}
                 </span>
                 <input
@@ -399,7 +422,11 @@ export default function Terminal({ isOpen, onClose, onNavigate }) {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="flex-1 bg-transparent border-none outline-none text-white/80 font-mono text-[11px] sm:text-xs ml-0.5 caret-white"
+                  className="flex-1 bg-transparent border-none outline-none font-mono text-[11px] sm:text-xs ml-0.5"
+                  style={{
+                    color: isDark ? 'rgba(255,255,255,0.80)' : 'rgba(0,0,0,0.80)',
+                    caretColor: isDark ? '#fff' : '#000',
+                  }}
                   spellCheck={false}
                   autoComplete="off"
                   autoCapitalize="off"
@@ -408,7 +435,13 @@ export default function Terminal({ isOpen, onClose, onNavigate }) {
             </div>
 
             {/* Status bar */}
-            <div className="px-4 py-1.5 border-t border-white/8 flex justify-between font-mono text-[8px] sm:text-[9px] text-white/20 shrink-0">
+            <div
+              className="px-4 py-1.5 flex justify-between font-mono text-[8px] sm:text-[9px] shrink-0"
+              style={{
+                borderTop: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+                color: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.20)',
+              }}
+            >
               <span>MINDSPACE TERMINAL v1.0.0</span>
               <span>
                 {history.filter((h) => h.type === 'input').length} commands ·
