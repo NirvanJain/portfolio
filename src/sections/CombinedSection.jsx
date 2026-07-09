@@ -1,12 +1,11 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform, useInView } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import HoverName from '../components/HoverName'
 import Reveal from '../components/Reveal'
 
 export default function CombinedSection({ scrollContainer }) {
   // Hero part refs
   const heroRef = useRef(null)
-  const isHeroInView = useInView(heroRef, { once: false })
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -17,7 +16,6 @@ export default function CombinedSection({ scrollContainer }) {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.6])
   const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
   const y = useTransform(scrollYProgress, [0, 1], [0, -100])
-  const blur = useTransform(scrollYProgress, [0, 0.7], [0, 14])
 
   return (
     <section id="hero" data-section ref={heroRef} className="relative h-screen flex flex-col md:flex-row items-center justify-center overflow-hidden">
@@ -28,7 +26,6 @@ export default function CombinedSection({ scrollContainer }) {
           scale,
           opacity,
           y,
-          filter: useTransform(blur, (v) => `blur(${v}px)`),
         }}
       >
         <Reveal delay={0} direction="up" className="mb-6">

@@ -104,7 +104,6 @@ export default function HeroSection({ scrollContainer }) {
   const scale   = useTransform(scrollYProgress, [0, 1], [1, 0.6])
   const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0])
   const y       = useTransform(scrollYProgress, [0, 1], [0, -100])
-  const blur    = useTransform(scrollYProgress, [0, 0.7], [0, 14])
 
   return (
     <section
@@ -122,7 +121,6 @@ export default function HeroSection({ scrollContainer }) {
           scale,
           opacity,
           y,
-          filter: useTransform(blur, (v) => `blur(${v}px)`),
         }}
       >
         <motion.div

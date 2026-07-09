@@ -116,8 +116,8 @@ export default function ScrollLine({ scrollContainer, theme }) {
   const { scrollYProgress } = useScroll({ container: scrollContainer })
 
   const smooth = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 30,
+    stiffness: 200,
+    damping: 25,
     restDelta: 0.001,
   })
 
